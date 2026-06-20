@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gem Sphere Codex</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#f0c255;--gold2:#fad87a;--gold3:#fff0a0;
+  --text:rgba(245,240,232,0.95);--text2:#e0d8cc;--text3:#c8c0b4;
+  --purple1:#cdb8ee;--purple2:#d8c8f5;--purple3:#e4d4ff;
+}
+html{scroll-behavior:smooth;background:#d4c4f0;}
+body{background:linear-gradient(160deg,#cdb8ee 0%,#d8c8f5 30%,#e4d4ff 60%,#d0bef0 100%);background-attachment:fixed;color:#f5f0e8;font-family:'Lato',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── GLITTER BG ── */
+.cosmos{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.cosmos-nebula{position:absolute;border-radius:50%;filter:blur(80px);}
+.cosmos-nebula:nth-child(1){width:600px;height:600px;top:-100px;left:-100px;background:radial-gradient(ellipse,rgba(180,130,240,0.4) 0%,rgba(210,170,255,0.15) 50%,transparent 70%);}
+.cosmos-nebula:nth-child(2){width:500px;height:500px;bottom:-80px;right:-80px;background:radial-gradient(ellipse,rgba(160,110,230,0.35) 0%,rgba(200,160,250,0.1) 50%,transparent 70%);}
+.cosmos-nebula:nth-child(3){width:400px;height:300px;top:50%;left:30%;background:radial-gradient(ellipse,rgba(220,180,255,0.3) 0%,transparent 70%);}
+.stars{position:absolute;inset:0;}
+.stars canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── LAYOUT ── */
+.page{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 1.2rem 5rem;}
+
+/* ── MASTHEAD ── */
+.masthead{text-align:center;padding:4rem 2rem 2.5rem;}
+.masthead-eyebrow{font-family:'Cinzel',serif;font-size:11px;font-weight:500;letter-spacing:0.4em;color:#f5f0e8;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:center;gap:16px;}
+.masthead-eyebrow::before,.masthead-eyebrow::after{content:'';display:block;width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(245,240,232,0.5));}
+.masthead-eyebrow::after{background:linear-gradient(90deg,rgba(245,240,232,0.5),transparent)}
+.masthead-title{font-family:'Cinzel',serif;font-size:clamp(38px,8vw,72px);font-weight:700;letter-spacing:0.06em;line-height:1.05;background:linear-gradient(160deg,#f0c255 0%,#fff0a0 35%,#ffffff 50%,#fff0a0 70%,#f0c255 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;}
+.masthead-sub{font-family:'Lato',sans-serif;font-style:italic;font-size:clamp(15px,2.2vw,19px);color:#e0d8cc;letter-spacing:0.04em;margin-bottom:2rem;}
+.masthead-divider{display:flex;align-items:center;justify-content:center;gap:16px;}
+.masthead-divider-line{flex:1;max-width:180px;height:1px;background:linear-gradient(90deg,transparent,rgba(240,194,85,0.55));}
+.masthead-divider-line.r{background:linear-gradient(90deg,rgba(240,194,85,0.55),transparent)}
+.masthead-divider-glyph{font-size:14px;color:#f0c255;letter-spacing:10px;}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;justify-content:center;gap:0;margin:2rem 0 0;border-bottom:1px solid rgba(245,240,232,0.2);}
+.nav-tab{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;padding:9px 20px;background:none;border:none;color:rgba(245,240,232,0.55);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.nav-tab.active{color:#f0c255;border-bottom-color:#f0c255;}
+.nav-tab:hover{color:#fad87a;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:1.8rem 0 1.4rem;}
+.ctrl-btn{font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:0.14em;padding:10px 22px;border:1px solid rgba(245,240,232,0.45);background:rgba(255,255,255,0.12);color:#f5f0e8;cursor:pointer;transition:all 0.2s;white-space:nowrap;backdrop-filter:blur(6px);}
+.ctrl-btn:hover{border-color:rgba(245,240,232,0.8);background:rgba(255,255,255,0.2);}
+.ctrl-btn.active-view{border-color:#f0c255;color:#f0c255;background:rgba(240,194,85,0.12);}
+.ctrl-select{font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:0.12em;padding:10px 14px;border:1px solid rgba(245,240,232,0.45);background:rgba(255,255,255,0.12);color:#f5f0e8;cursor:pointer;outline:none;transition:all 0.2s;backdrop-filter:blur(6px);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23f5f0e8' opacity='0.8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.ctrl-select option{background:#8860b0;color:#f5f0e8;}
+.ctrl-select:hover{border-color:rgba(245,240,232,0.8);}
+
+/* ── CABINET FILTER ── */
+.cabinet-bar{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;margin-bottom:8px;scrollbar-width:none;}
+.cabinet-bar::-webkit-scrollbar{display:none;}
+.cab-chip{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;padding:5px 12px;border:1px solid rgba(245,240,232,0.3);background:rgba(255,255,255,0.1);color:rgba(245,240,232,0.7);cursor:pointer;white-space:nowrap;flex-shrink:0;border-radius:0;transition:all .2s;backdrop-filter:blur(4px);}
+.cab-chip.active{background:rgba(240,194,85,0.2);border-color:#f0c255;color:#f0c255;}
+
+/* ── CARD COUNT ── */
+.card-count{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.2em;color:#c8c0b4;text-align:center;margin-bottom:1.5rem;}
+
+/* ── CARD GRID ── */
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;justify-items:center;}
+@media(min-width:600px){.card-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:24px;}}
+
+/* ── EMPTY STATE ── */
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;}
+.empty-state-glyph{font-size:44px;margin-bottom:1.2rem;opacity:0.3;}
+.empty-state-title{font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);letter-spacing:0.15em;margin-bottom:0.6rem;}
+.empty-state-text{font-size:13px;color:var(--text3);line-height:1.7;max-width:320px;margin:0 auto;}
+
+/* ── TRADING CARD ── */
+.lcard{width:100%;max-width:196px;aspect-ratio:63/88;position:relative;cursor:pointer;transition:transform 0.4s cubic-bezier(0.34,1.4,0.64,1);}
+.lcard:hover{transform:translateY(-14px) rotateY(-4deg) rotateX(3deg) scale(1.05);}
+.lcard::before{content:'';position:absolute;inset:-4px;border-radius:20px;opacity:0;transition:opacity 0.35s;z-index:0;pointer-events:none;}
+.lcard:hover::before{opacity:1}
+.lcard.rarity-common::before{box-shadow:0 0 40px rgba(190,160,80,0.35);}
+.lcard.rarity-uncommon::before{box-shadow:0 0 50px rgba(60,180,90,0.4);}
+.lcard.rarity-rare::before{box-shadow:0 0 55px rgba(80,120,230,0.5);}
+.lcard.rarity-ultra::before{box-shadow:0 0 70px rgba(180,70,250,0.6),0 0 140px rgba(180,70,250,0.15);animation:ultraPulse 3s ease-in-out infinite;}
+@keyframes ultraPulse{0%,100%{box-shadow:0 0 70px rgba(180,70,250,0.6),0 0 140px rgba(180,70,250,0.15)}50%{box-shadow:0 0 90px rgba(180,70,250,0.8),0 0 180px rgba(180,70,250,0.2)}}
+.card-body{position:absolute;inset:0;border-radius:18px;overflow:hidden;z-index:1;box-shadow:0 20px 60px rgba(0,0,0,0.85),inset 0 0 0 1px rgba(255,255,255,0.06);}
+.card-foil{position:absolute;inset:0;z-index:12;border-radius:18px;background:linear-gradient(115deg,transparent 0%,transparent 35%,rgba(255,255,255,0.03) 42%,rgba(255,255,255,0.06) 48%,rgba(255,255,255,0.03) 54%,transparent 60%,transparent 100%);background-size:200% 200%;animation:foilShift 5s ease-in-out infinite;pointer-events:none;mix-blend-mode:screen;}
+@keyframes foilShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.lcard.rarity-rare .card-foil,.lcard.rarity-ultra .card-foil{background:linear-gradient(115deg,transparent 0%,transparent 20%,rgba(120,190,255,0.05) 28%,rgba(255,210,120,0.07) 37%,rgba(190,130,255,0.05) 46%,rgba(120,230,190,0.04) 55%,transparent 64%,transparent 100%);background-size:300% 300%;animation:foilRainbow 3.5s ease-in-out infinite;}
+@keyframes foilRainbow{0%,100%{background-position:0% 0%}33%{background-position:100% 50%}66%{background-position:50% 100%}}
+.card-bg{position:absolute;inset:0;}
+.card-frame{position:absolute;inset:0;border-radius:18px;z-index:2;pointer-events:none;}
+.card-frame::before{content:'';position:absolute;inset:6px;border-radius:13px;border:1px solid rgba(255,255,255,0.1);}
+.card-frame::after{content:'';position:absolute;inset:9px;border-radius:10px;border:0.5px solid rgba(255,255,255,0.05);}
+.corner{position:absolute;width:26px;height:26px;z-index:3;pointer-events:none;}
+.corner svg{width:100%;height:100%}
+.corner.tl{top:7px;left:7px}.corner.tr{top:7px;right:7px;transform:scaleX(-1)}
+.corner.bl{bottom:7px;left:7px;transform:scaleY(-1)}.corner.br{bottom:7px;right:7px;transform:scale(-1)}
+.card-content{position:absolute;inset:0;border-radius:18px;display:flex;flex-direction:column;z-index:4;overflow:hidden;}
+.card-content.has-photo .card-top{position:absolute;top:0;left:0;right:0;z-index:10;padding:7px 9px 3px;background:linear-gradient(to bottom,rgba(0,0,0,0.65),rgba(0,0,0,0));}
+.card-top{padding:9px 11px 3px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
+.card-gem-name{font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:0.02em;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,0.9);max-width:64%;}
+.card-cost{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.card-mohs{font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.1em;opacity:0.65;text-shadow:0 1px 4px rgba(0,0,0,0.9);}
+.rarity-gems{display:flex;gap:3px;}
+.rarity-gem{width:6px;height:6px;border-radius:50%;box-shadow:0 0 5px currentColor,0 0 10px currentColor;}
+.card-orb-area{flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.card-orb-area.orb-photo{width:100%;flex:1;min-height:0;}
+.card-orb-area.orb-photo .photo-fill{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.card-orb-area.orb-photo .photo-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.5) 100%);z-index:2;pointer-events:none;}
+.card-orb-area.orb-canvas{height:82px;background:radial-gradient(circle at 50% 60%,rgba(196,146,42,0.12) 0%,transparent 70%);}
+.rotate-btn{position:absolute;bottom:6px;right:6px;z-index:15;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,0.55);border:1px solid rgba(196,146,42,0.4);color:#fad87a;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.2s;}
+.card-orb-area:hover .rotate-btn,.rotate-btn:focus{opacity:1;}
+.cab-badge-wrap-card{position:absolute;top:4px;left:4px;right:30px;z-index:16;display:flex;flex-wrap:wrap;gap:2px;}
+.cab-badge-card{font-family:'Cinzel',serif;font-size:6px;letter-spacing:.06em;background:rgba(240,194,85,0.85);color:#1a0a00;padding:2px 5px;border-radius:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-type-banner{padding:4px 9px 2px;background:linear-gradient(135deg,rgba(196,146,42,0.08),rgba(196,146,42,0.03));border-top:0.5px solid rgba(196,146,42,0.15);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;}
+.card-type-text{font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.16em;font-weight:500;}
+.card-chakra{font-size:6.5px;letter-spacing:0.07em;opacity:0.55;}
+.card-textbox{flex:1;padding:5px 9px;overflow:hidden;}
+.card-flavor{font-size:7px;line-height:1.5;opacity:0.8;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
+.card-bottom{padding:3px 9px 7px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.card-origin{font-size:7.5px;opacity:0.55;letter-spacing:0.05em;}
+.card-rarity-text{font-family:'Cinzel',serif;font-size:6.5px;letter-spacing:0.18em;font-weight:500;}
+
+/* ── LIST VIEW ── */
+#view-list{display:none;}
+.list-wrap{overflow-x:auto;border-radius:0;border:1px solid rgba(245,240,232,0.2);background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);}
+.list-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.list-table th{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.12em;color:#f0c255;padding:9px 10px;border-bottom:1px solid rgba(240,194,85,0.25);text-align:left;background:rgba(0,0,0,0.15);position:sticky;top:0;}
+.list-table td{padding:8px 10px;border-bottom:1px solid rgba(245,240,232,0.08);vertical-align:middle;color:#e0d8cc;}
+.list-table tr:hover td{background:rgba(255,255,255,0.06);}
+.list-thumb{width:38px;height:38px;border-radius:4px;object-fit:cover;display:block;cursor:pointer;}
+.list-thumb-empty{width:38px;height:38px;border-radius:4px;background:rgba(196,146,42,0.1);display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.list-name{font-family:'Cinzel',serif;font-size:.66rem;font-weight:600;color:#f5f0e8;letter-spacing:.03em;cursor:pointer;}
+.list-name:hover{color:#f0c255;}
+.list-acts{display:flex;gap:4px;}
+.list-act{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.05em;padding:4px 7px;border:1px solid rgba(245,240,232,0.2);background:rgba(255,255,255,0.08);color:#c8c0b4;cursor:pointer;}
+.list-act.del{border-color:rgba(200,60,80,.35);color:#e07070;}
+
+/* ── CABINETS TAB ── */
+#tab-cabinets{display:none;padding-top:1.5rem;}
+.cab-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(min-width:500px){.cab-grid{grid-template-columns:repeat(3,1fr);}}
+.cab-card{background:rgba(255,255,255,0.1);border:1px solid rgba(245,240,232,0.2);padding:14px;backdrop-filter:blur(8px);cursor:pointer;transition:all .2s;}
+.cab-card:hover{background:rgba(255,255,255,0.16);border-color:rgba(240,194,85,0.4);}
+.cab-icon{font-size:1.5rem;margin-bottom:6px;}
+.cab-name{font-family:'Cinzel',serif;font-size:.7rem;font-weight:600;color:#f5f0e8;letter-spacing:.04em;margin-bottom:2px;}
+.cab-loc{font-size:.7rem;font-style:italic;color:#c8c0b4;}
+.cab-count{font-family:'Cinzel',serif;font-size:.56rem;color:#f0c255;margin-top:6px;}
+.cab-acts{display:flex;gap:4px;margin-top:8px;}
+.cab-act{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.05em;padding:4px 8px;border:1px solid rgba(245,240,232,0.2);background:rgba(255,255,255,0.08);color:#c8c0b4;cursor:pointer;}
+.cab-act.del{border-color:rgba(200,60,80,.3);color:#e07070;}
+.add-cab-card{background:rgba(240,194,85,0.06);border:1px dashed rgba(240,194,85,0.3);padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:100px;transition:all .2s;}
+.add-cab-card:hover{background:rgba(240,194,85,0.12);}
+.add-cab-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;color:#f0c255;margin-top:4px;}
+
+/* ── DETAIL MODAL ── */
+.detail-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(4,3,10,0.88);backdrop-filter:blur(6px);padding:1rem;}
+.detail-modal.open{display:flex;}
+.detail-inner{background:linear-gradient(145deg,#0d0b1a,#07060f);border:1px solid rgba(196,146,42,0.2);border-radius:18px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;padding:1.8rem 1.6rem;position:relative;box-shadow:0 40px 100px rgba(0,0,0,0.8);}
+.modal-close{position:absolute;top:12px;right:14px;font-size:20px;color:#e0d8cc;cursor:pointer;background:none;border:none;line-height:1;}
+.modal-close:hover{color:#fad87a;}
+.modal-gem-name{font-family:'Cinzel Decorative',serif;font-size:clamp(16px,4vw,22px);background:linear-gradient(135deg,#e8b84a,#f5d87a,#c4922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px;line-height:1.2;}
+.modal-type{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.2em;color:#c8c0b4;margin-bottom:1rem;}
+.modal-photo-wrap{position:relative;width:100%;margin:10px 0;border-radius:10px;overflow:hidden;}
+.modal-photo{width:100%;height:210px;background-size:cover;background-position:center;border-radius:8px;transition:transform 0.18s ease;}
+.modal-rotate-btn{position:absolute;top:8px;right:8px;z-index:5;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.6);border:1px solid rgba(196,146,42,0.5);color:#fad87a;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.modal-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:10px 0;}
+.modal-field{display:flex;flex-direction:column;gap:1px;}
+.modal-field-label{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.18em;color:#c8c0b4;}
+.modal-field-val{font-size:12px;color:#e0d8cc;}
+.modal-section{margin:10px 0;}
+.modal-section-title{font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.3em;color:#f0c255;opacity:0.75;margin-bottom:5px;text-transform:uppercase;}
+.modal-facts{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.modal-facts li{font-size:11.5px;line-height:1.6;color:#e0d8cc;padding-left:12px;position:relative;}
+.modal-facts li::before{content:'◆';position:absolute;left:0;font-size:5px;color:#f0c255;top:5px;}
+.modal-actions{display:flex;gap:8px;margin-top:1rem;}
+.modal-btn{flex:1;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.14em;padding:10px;border:1px solid rgba(196,146,42,0.3);background:transparent;color:#fad87a;cursor:pointer;transition:all 0.2s;}
+.modal-btn:hover{background:rgba(196,146,42,0.1);border-color:#fad87a;}
+.modal-btn.danger{border-color:rgba(200,60,60,0.4);color:#e07070;}
+.modal-btn.danger:hover{background:rgba(200,60,60,0.1);}
+
+/* ── ADD / EDIT PANEL ── */
+.add-fab{position:fixed;bottom:28px;right:24px;z-index:50;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#c4922a,#e8b84a);border:none;cursor:pointer;font-size:24px;color:#04030a;box-shadow:0 8px 32px rgba(196,146,42,0.4);transition:transform 0.2s,box-shadow 0.2s;display:flex;align-items:center;justify-content:center;}
+.add-fab:hover{transform:scale(1.1);box-shadow:0 12px 40px rgba(196,146,42,0.55);}
+.add-panel{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;justify-content:center;background:rgba(4,3,10,0.75);backdrop-filter:blur(4px);padding:0;}
+.add-panel.open{display:flex;}
+@media(min-width:600px){.add-panel{align-items:center;padding:1rem;}}
+.add-form{background:linear-gradient(160deg,#0d0b1a,#07060f);border:1px solid rgba(196,146,42,0.2);border-radius:18px 18px 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:1.6rem 1.4rem 1.8rem;}
+@media(min-width:600px){.add-form{border-radius:18px;}}
+.add-form h2{font-family:'Cinzel Decorative',serif;font-size:16px;background:linear-gradient(135deg,#e8b84a,#c4922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.2rem;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.24em;color:#c8c0b4;}
+.form-field input,.form-field select,.form-field textarea{background:rgba(255,255,255,0.04);border:1px solid rgba(196,146,42,0.2);color:#f5f0e8;font-family:'Lato',sans-serif;font-size:13px;padding:8px 10px;border-radius:0;outline:none;transition:border-color 0.2s;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:rgba(196,146,42,0.5);}
+.form-field select option{background:#0d0b1a;}
+.form-field textarea{resize:vertical;min-height:62px;line-height:1.5;}
+#f-cabinets-wrap{display:flex;flex-direction:column;gap:6px;max-height:150px;overflow-y:auto;background:rgba(255,255,255,0.04);border:1px solid rgba(196,146,42,0.2);padding:8px 10px;}
+.cab-check-row{display:flex;align-items:center;gap:8px;font-family:'Lato',sans-serif;font-size:13px;color:#f5f0e8;cursor:pointer;}
+.cab-check-row input[type=checkbox]{width:16px;height:16px;accent-color:#f0c255;cursor:pointer;flex-shrink:0;}
+.cab-check-empty{font-size:12px;font-style:italic;color:#c8c0b4;padding:4px 0;}
+.photo-upload-area{grid-column:1/-1;border:1px dashed rgba(196,146,42,0.3);padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+.photo-upload-area:hover{border-color:rgba(196,146,42,0.6);background:rgba(196,146,42,0.04);}
+.photo-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.photo-upload-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.18em;color:#c8c0b4;}
+.photo-preview{width:100%;max-height:150px;object-fit:cover;border-radius:3px;margin-top:7px;display:none;}
+.form-actions{display:flex;gap:10px;margin-top:1.2rem;grid-column:1/-1;}
+.form-btn{flex:1;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.16em;padding:11px;border:1px solid rgba(196,146,42,0.35);background:transparent;color:#fad87a;cursor:pointer;transition:all 0.2s;}
+.form-btn:hover{background:rgba(196,146,42,0.1);}
+.form-btn.primary{background:linear-gradient(135deg,rgba(196,146,42,0.25),rgba(196,146,42,0.1));border-color:#fad87a;}
+.form-btn.cancel-btn{border-color:rgba(255,255,255,0.15);color:#c8c0b4;}
+
+/* ── CABINET MODAL ── */
+.cab-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(4,3,10,0.85);backdrop-filter:blur(6px);padding:1rem;}
+.cab-modal.open{display:flex;}
+.cab-mbox{background:linear-gradient(145deg,#0d0b1a,#07060f);border:1px solid rgba(196,146,42,0.2);border-radius:16px;max-width:360px;width:100%;padding:1.6rem 1.4rem;position:relative;}
+.cab-mbox h2{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.2em;color:#f0c255;text-align:center;margin-bottom:14px;}
+
+/* ── DELETE CONFIRM ── */
+.del-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(4,3,10,0.9);backdrop-filter:blur(6px);padding:1rem;}
+.del-modal.open{display:flex;}
+.del-mbox{background:linear-gradient(145deg,#0d0b1a,#07060f);border:1px solid rgba(200,60,80,0.4);border-radius:16px;max-width:300px;width:100%;padding:1.6rem 1.4rem;text-align:center;}
+.del-mbox h2{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:#e07070;margin-bottom:10px;}
+.del-name{font-family:'Cinzel',serif;font-size:14px;color:#f5f0e8;margin-bottom:8px;}
+.del-note{font-size:12px;font-style:italic;color:#c8c0b4;margin-bottom:16px;line-height:1.5;}
+.del-acts{display:flex;gap:8px;}
+.del-acts button{flex:1;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;padding:12px;border-radius:0;cursor:pointer;min-height:42px;}
+.del-keep{background:rgba(255,255,255,0.06);border:1px solid rgba(245,240,232,0.2);color:#e0d8cc;}
+.del-yes{background:linear-gradient(135deg,#901828,#c02840);border:none;color:#fff;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(13,11,26,0.96);border:1px solid rgba(196,146,42,0.4);color:#fff0a0;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.14em;padding:11px 22px;opacity:0;transition:all 0.3s;z-index:400;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="cosmos">
+  <div class="cosmos-nebula"></div><div class="cosmos-nebula"></div><div class="cosmos-nebula"></div>
+  <div class="stars"><canvas id="glitter-canvas"></canvas></div>
+</div>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-eyebrow">Personal Collection</div>
+    <div class="masthead-title">Gem Sphere Codex</div>
+    <div class="masthead-sub">A catalogue of crystal spheres</div>
+    <div class="masthead-divider">
+      <div class="masthead-divider-line"></div>
+      <div class="masthead-divider-glyph">✦ ✦ ✦</div>
+      <div class="masthead-divider-line r"></div>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="collection">Collection</button>
+    <button class="nav-tab" data-tab="cabinets">Display Stands</button>
+  </div>
+
+  <!-- COLLECTION TAB -->
+  <div id="tab-collection">
+    <div class="toolbar">
+      <select class="ctrl-select" id="cat-sel" onchange="renderCards()"><option value="all">All Categories</option></select>
+      <select class="ctrl-select" id="rarity-sel" onchange="renderCards()">
+        <option value="all">All Rarities</option>
+        <option value="Common">Common</option>
+        <option value="Uncommon">Uncommon</option>
+        <option value="Rare">Rare</option>
+        <option value="Ultra Rare">Ultra Rare</option>
+      </select>
+      <button class="ctrl-btn active-view" id="btn-grid-view">⊞ Cards</button>
+      <button class="ctrl-btn" id="btn-list-view">≡ List</button>
+    </div>
+    <div class="cabinet-bar" id="cabinet-bar"></div>
+    <div class="card-count" id="card-count"></div>
+
+    <!-- GRID -->
+    <div id="view-grid"><div class="card-grid" id="card-grid"></div></div>
+
+    <!-- LIST -->
+    <div id="view-list">
+      <div class="list-wrap">
+        <table class="list-table">
+          <thead><tr>
+            <th></th><th>Name</th><th>Type</th><th>Diameter</th><th>Weight</th>
+            <th>Origin</th><th>Provenance</th><th>Display Stand</th><th></th>
+          </tr></thead>
+          <tbody id="list-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABINETS / DISPLAY STANDS TAB -->
+  <div id="tab-cabinets">
+    <div class="toolbar">
+      <button class="ctrl-btn" id="btn-add-cab" style="background:linear-gradient(135deg,rgba(196,146,42,0.25),rgba(196,146,42,0.1));border-color:#fad87a;color:#fad87a;">＋ New Display Stand</button>
+    </div>
+    <div id="cab-grid-wrap"></div>
+  </div>
+</div>
+
+<!-- ADD FAB -->
+<button class="add-fab" onclick="openAddPanel()" title="Add Sphere">＋</button>
+
+<!-- ADD / EDIT PANEL -->
+<div class="add-panel" id="add-panel">
+  <div class="add-form">
+    <h2 id="form-title">Add New Sphere</h2>
+    <div class="form-grid">
+      <div class="form-field full"><label>Sphere Name</label><input type="text" id="f-name" placeholder="e.g. Labradorite Sphere"></div>
+      <div class="form-field"><label>Category</label><input type="text" id="f-cat" placeholder="e.g. Feldspar"></div>
+      <div class="form-field"><label>Mineral Type</label><input type="text" id="f-type" placeholder="e.g. Labradorite"></div>
+      <div class="form-field"><label>Rarity</label>
+        <select id="f-rarity"><option>Common</option><option>Uncommon</option><option>Rare</option><option>Ultra Rare</option></select>
+      </div>
+      <div class="form-field"><label>Mohs Hardness</label><input type="number" id="f-mohs" step="0.5" min="1" max="10" placeholder="7"></div>
+      <div class="form-field"><label>Diameter (mm)</label><input type="number" id="f-diameter" step="1" min="1" placeholder="60"></div>
+      <div class="form-field"><label>Weight (g)</label><input type="number" id="f-weight" step="1" min="1" placeholder="250"></div>
+      <div class="form-field"><label>Country / Origin</label><input type="text" id="f-origin" placeholder="e.g. Madagascar"></div>
+      <div class="form-field"><label>Mine / Location</label><input type="text" id="f-location" placeholder="e.g. Ambositra"></div>
+      <div class="form-field full"><label>Provenance (from whom)</label><input type="text" id="f-prov" placeholder="e.g. Tucson Gem Show 2024"></div>
+      <div class="form-field"><label>Chakra</label><input type="text" id="f-chakra" placeholder="e.g. Crown & Third Eye"></div>
+      <div class="form-field full"><label>Display Stands (select any that apply)</label>
+        <div id="f-cabinets-wrap"></div>
+      </div>
+      <div class="form-field full"><label>Flavor Description</label><input type="text" id="f-flavor" placeholder="Short poetic description"></div>
+      <div class="form-field full"><label>Facts (one per line, up to 5)</label>
+        <textarea id="f-facts" placeholder="Enter a gemological fact&#10;Enter another fact"></textarea>
+      </div>
+      <div class="photo-upload-area">
+        <input type="file" id="f-photo" accept="image/*" onchange="previewPhoto(this)">
+        <div class="photo-upload-label">📷 TAP TO UPLOAD PHOTO</div>
+        <img class="photo-preview" id="photo-preview-img" alt="">
+      </div>
+      <div class="form-actions">
+        <button class="form-btn cancel-btn" onclick="closeAddPanel()">Cancel</button>
+        <button class="form-btn primary" onclick="saveGem()">Save Sphere</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-modal" id="detail-modal" onclick="maybeCloseModal(event)">
+  <div class="detail-inner" id="detail-inner"></div>
+</div>
+
+<!-- CABINET MODAL -->
+<div class="cab-modal" id="cab-modal" onclick="maybeCloseCabModal(event)">
+  <div class="cab-mbox">
+    <h2 id="cab-form-title">✦ NEW DISPLAY STAND ✦</h2>
+    <div class="form-field full" style="margin-bottom:10px;"><label style="font-family:Cinzel,serif;font-size:8px;letter-spacing:.22em;color:#c8c0b4;display:block;margin-bottom:4px;">STAND NAME</label><input type="text" id="cf-name" placeholder="Main Display Shelf" style="background:rgba(255,255,255,0.04);border:1px solid rgba(196,146,42,0.2);color:#f5f0e8;font-family:Lato,sans-serif;font-size:13px;padding:8px 10px;border-radius:0;outline:none;width:100%;"></div>
+    <div class="form-field full" style="margin-bottom:10px;"><label style="font-family:Cinzel,serif;font-size:8px;letter-spacing:.22em;color:#c8c0b4;display:block;margin-bottom:4px;">LOCATION</label><input type="text" id="cf-loc" placeholder="Living room bookshelf" style="background:rgba(255,255,255,0.04);border:1px solid rgba(196,146,42,0.2);color:#f5f0e8;font-family:Lato,sans-serif;font-size:13px;padding:8px 10px;border-radius:0;outline:none;width:100%;"></div>
+    <div class="form-field full" style="margin-bottom:14px;"><label style="font-family:Cinzel,serif;font-size:8px;letter-spacing:.22em;color:#c8c0b4;display:block;margin-bottom:4px;">DESCRIPTION</label><input type="text" id="cf-desc" placeholder="e.g. Wooden 3-tier stand" style="background:rgba(255,255,255,0.04);border:1px solid rgba(196,146,42,0.2);color:#f5f0e8;font-family:Lato,sans-serif;font-size:13px;padding:8px 10px;border-radius:0;outline:none;width:100%;"></div>
+    <div class="form-actions" style="margin-top:0;">
+      <button class="form-btn cancel-btn" onclick="closeCabModal()">Cancel</button>
+      <button class="form-btn primary" onclick="saveCabinet()">Save Stand</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="del-modal" id="del-modal">
+  <div class="del-mbox">
+    <h2>REMOVE?</h2>
+    <div class="del-name" id="del-name"></div>
+    <div class="del-note" id="del-note">This cannot be undone.</div>
+    <div class="del-acts">
+      <button class="del-keep" onclick="closeDel()">Keep It</button>
+      <button class="del-yes" id="del-yes-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DB ──────────────────────────────────────────────────────────────────────
+const DB_NAME='GemSphereCodex', DB_VER=2, STORE='gems', CAB_STORE='cabinets';
+const RARITY_CLASS={Common:'rarity-common',Uncommon:'rarity-uncommon',Rare:'rarity-rare','Ultra Rare':'rarity-ultra'};
+const RARITY_DOTS={Common:1,Uncommon:2,Rare:3,'Ultra Rare':4};
+const RARITY_COLOR={Common:'#c8b870',Uncommon:'#60c070',Rare:'#6090e0','Ultra Rare':'#c050f0'};
+const STAT_COLORS=['#e8b84a','#6090e0','#c050f0','#60c070'];
+const CORNER_SVG=`<svg viewBox="0 0 28 28" fill="none"><path d="M3 25 L3 5 Q3 3 5 3 L13 3" stroke="rgba(196,146,42,0.55)" stroke-width="0.8" fill="none"/><circle cx="3" cy="3" r="1.8" fill="rgba(196,146,42,0.6)"/><circle cx="13" cy="3" r="1.2" fill="rgba(196,146,42,0.3)"/><circle cx="3" cy="25" r="1.2" fill="rgba(196,146,42,0.3)"/></svg>`;
+
+let db=null, GEMS=[], CABINETS=[], editingId=null, photoDataURL=null;
+let editingCabId=null, delPending=null, currentView='grid', filterCabinet='all';
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains(CAB_STORE)) d.createObjectStore(CAB_STORE,{keyPath:'id',autoIncrement:true});
+    };
+    req.onsuccess=e=>{db=e.target.result;res(db);};
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+function dbGetAll(store){return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const req=tx.objectStore(store).getAll();req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error);});}
+function dbPut(store,obj){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const req=tx.objectStore(store).put(obj);req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error);});}
+function dbDelete(store,id){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const req=tx.objectStore(store).delete(id);req.onsuccess=()=>res();req.onerror=()=>rej(req.error);});}
+
+function getRotation(id){return parseInt(localStorage.getItem('srot_'+id)||'0');}
+function setRotation(id,v){localStorage.setItem('srot_'+id,v);}
+function getPosition(id){return localStorage.getItem('spos_'+id)||'50% 30%';}
+function setPosition(id,v){localStorage.setItem('spos_'+id,v);}
+function getCabName(id){const c=CABINETS.find(x=>x.id===id);return c?c.name:'';}
+function gemCabinets(g){
+  if(Array.isArray(g.cabinets))return g.cabinets;
+  if(g.cabinet)return [g.cabinet];
+  return [];
+}
+function getCabNames(g){return gemCabinets(g).map(getCabName).filter(Boolean);}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+async function init(){
+  await openDB();
+  [GEMS,CABINETS]=await Promise.all([dbGetAll(STORE),dbGetAll(CAB_STORE)]);
+  GEMS.forEach(g=>{
+    if(g.cabinets===undefined){
+      g.cabinets = g.cabinet ? [g.cabinet] : [];
+    }
+  });
+  rebuildCategoryFilter();
+  renderCabBar();
+  renderCards();
+}
+
+// ── NAV TABS ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-tab').forEach(btn=>{
+  btn.onclick=function(){
+    document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const tab=this.getAttribute('data-tab');
+    document.getElementById('tab-collection').style.display=tab==='collection'?'':'none';
+    document.getElementById('tab-cabinets').style.display=tab==='cabinets'?'':'none';
+    if(tab==='cabinets')renderCabinets();
+  };
+});
+
+// ── VIEW TOGGLE ─────────────────────────────────────────────────────────────
+document.getElementById('btn-grid-view').onclick=function(){
+  currentView='grid';
+  document.getElementById('view-grid').style.display='block';
+  document.getElementById('view-list').style.display='none';
+  this.classList.add('active-view');
+  document.getElementById('btn-list-view').classList.remove('active-view');
+};
+document.getElementById('btn-list-view').onclick=function(){
+  currentView='list';
+  document.getElementById('view-grid').style.display='none';
+  document.getElementById('view-list').style.display='block';
+  this.classList.add('active-view');
+  document.getElementById('btn-grid-view').classList.remove('active-view');
+  renderList();
+};
+
+// ── CABINET FILTER BAR ───────────────────────────────────────────────────────
+function renderCabBar(){
+  const bar=document.getElementById('cabinet-bar');
+  let h=`<button class="cab-chip${filterCabinet==='all'?' active':''}" data-c="all">All</button>`;
+  h+=`<button class="cab-chip${filterCabinet==='none'?' active':''}" data-c="none">Unassigned</button>`;
+  CABINETS.forEach(c=>{h+=`<button class="cab-chip${filterCabinet===c.id?' active':''}" data-c="${c.id}">${esc(c.name)}</button>`;});
+  bar.innerHTML=h;
+  bar.onclick=ev=>{
+    const chip=ev.target.closest('.cab-chip');if(!chip)return;
+    const v=chip.getAttribute('data-c');
+    filterCabinet=v==='all'?'all':v==='none'?'none':parseInt(v);
+    renderCabBar();renderCards();
+  };
+}
+
+function filteredGems(){
+  let pool=GEMS.slice();
+  if(filterCabinet==='none') pool=pool.filter(g=>gemCabinets(g).length===0);
+  else if(filterCabinet!=='all') pool=pool.filter(g=>gemCabinets(g).indexOf(filterCabinet)>-1);
+  return pool;
+}
+
+// ── RENDER CARDS ─────────────────────────────────────────────────────────────
+function rebuildCategoryFilter(){
+  const sel=document.getElementById('cat-sel');
+  const cats=[...new Set(GEMS.map(g=>g.cat).filter(Boolean))].sort();
+  sel.innerHTML='<option value="all">All Categories</option>';
+  cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+}
+
+function renderCards(){
+  rebuildCategoryFilter();
+  renderCabBar();
+  const cat=document.getElementById('cat-sel').value;
+  const rar=document.getElementById('rarity-sel').value;
+  const grid=document.getElementById('card-grid');
+  const countEl=document.getElementById('card-count');
+  grid.innerHTML='';
+  let pool=filteredGems().filter(g=>{
+    return (cat==='all'||g.cat===cat)&&(rar==='all'||g.rarity===rar);
+  });
+  if(!pool.length){
+    grid.innerHTML=`<div class="empty-state"><div class="empty-state-glyph">🔮</div><div class="empty-state-title">No Spheres Yet</div><div class="empty-state-text">Tap the gold ＋ button to add your first sphere to the Codex.</div></div>`;
+    countEl.textContent='';
+    if(currentView==='list')renderList();
+    return;
+  }
+  pool.forEach((g,i)=>{const card=buildCard(g);card.style.animationDelay=`${i*0.04}s`;grid.appendChild(card);});
+  countEl.textContent=`${pool.length} sphere${pool.length!==1?'s':''} in the Codex`;
+  if(currentView==='list')renderList();
+}
+
+// ── BUILD CARD ───────────────────────────────────────────────────────────────
+function buildCard(gem){
+  const wrap=document.createElement('div');
+  wrap.className=`lcard ${RARITY_CLASS[gem.rarity]||'rarity-common'}`;
+  const body=document.createElement('div');body.className='card-body';
+  const bg=document.createElement('div');bg.className='card-bg';
+  const [b1,b2,b3]=gem.bg||['#0d0b1a','#09081a','#04030a'];
+  bg.style.background=`radial-gradient(ellipse at 38% 28%,${b1} 0%,${b2} 45%,${b3} 100%)`;
+  body.appendChild(bg);
+  const foil=document.createElement('div');foil.className='card-foil';body.appendChild(foil);
+  const frame=document.createElement('div');frame.className='card-frame';body.appendChild(frame);
+  ['tl','tr','bl','br'].forEach(p=>{const c=document.createElement('div');c.className=`corner ${p}`;c.innerHTML=CORNER_SVG;body.appendChild(c);});
+  const content=document.createElement('div');
+  const hasPhoto=!!gem.photo;
+  content.className='card-content'+(hasPhoto?' has-photo':'');
+  const tc=gem.textCol||'rgba(226,216,200,0.95)';
+  const dotColor=RARITY_COLOR[gem.rarity]||'#c8b870';
+  const dotsHTML=Array.from({length:RARITY_DOTS[gem.rarity]||1},()=>`<div class="rarity-gem" style="background:${dotColor};color:${dotColor}"></div>`).join('');
+  const top=document.createElement('div');top.className='card-top';
+  top.innerHTML=`<div class="card-gem-name" style="color:${tc}">${gem.name}</div><div class="card-cost"><div class="card-mohs" style="color:${tc}">◆ ${gem.mohs||'?'}</div><div class="rarity-gems">${dotsHTML}</div></div>`;
+  content.appendChild(top);
+  const orbArea=document.createElement('div');
+  orbArea.className='card-orb-area '+(hasPhoto?'orb-photo':'orb-canvas');
+  if(hasPhoto){
+    const rotWrap=document.createElement('div');
+    rotWrap.style.cssText='position:absolute;inset:0;overflow:hidden;border-radius:inherit;';
+    const deg=getRotation(gem.id);
+    if(deg)rotWrap.style.transform=`rotate(${deg}deg) ${(deg===90||deg===270)?'scale(1.42)':'scale(1)'}`;
+    const img=document.createElement('img');img.className='photo-fill';img.src=gem.photo;img.draggable=false;img.style.objectPosition=getPosition(gem.id);
+    let ts=null,tsp=null,tm=false;
+    rotWrap.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];ts={x:t.clientX,y:t.clientY};const p=img.style.objectPosition.split(' ');tsp={x:parseFloat(p[0])||50,y:parseFloat(p[1])||30};tm=false;},{passive:true});
+    rotWrap.addEventListener('touchmove',e=>{if(!ts||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-ts.x,dy=t.clientY-ts.y;if(!tm&&Math.abs(dx)<6&&Math.abs(dy)<6)return;tm=true;e.stopPropagation();const nx=Math.max(0,Math.min(100,tsp.x-(dx/rotWrap.offsetWidth)*150));const ny=Math.max(0,Math.min(100,tsp.y-(dy/rotWrap.offsetHeight)*150));img.style.objectPosition=`${nx.toFixed(1)}% ${ny.toFixed(1)}%`;},{passive:false});
+    rotWrap.addEventListener('touchend',()=>{if(tm)setPosition(gem.id,img.style.objectPosition);ts=null;});
+    rotWrap.appendChild(img);
+    const vig=document.createElement('div');vig.className='photo-vignette';rotWrap.appendChild(vig);
+    orbArea.appendChild(rotWrap);
+    const rotBtn=document.createElement('div');rotBtn.className='rotate-btn';rotBtn.textContent='↻';
+    rotBtn.addEventListener('click',e=>{e.stopPropagation();const nd=(getRotation(gem.id)+90)%360;setRotation(gem.id,nd);const sc=(nd===90||nd===270)?'scale(1.42)':'scale(1)';rotWrap.style.transition='transform 0.18s ease';rotWrap.style.transform=`rotate(${nd}deg) ${sc}`;});
+    orbArea.appendChild(rotBtn);
+    const cabNames=getCabNames(gem);
+    if(cabNames.length){
+      const badgeWrap=document.createElement('div');badgeWrap.className='cab-badge-wrap-card';
+      cabNames.forEach(n=>{const b=document.createElement('div');b.className='cab-badge-card';b.textContent=n;badgeWrap.appendChild(b);});
+      orbArea.appendChild(badgeWrap);
+    }
+  } else {
+    const cv=document.createElement('canvas');cv.width=110;cv.height=110;cv.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:86px;height:86px;';orbArea.appendChild(cv);
+    setTimeout(()=>drawOrb(cv,dotColor),30);
+  }
+  content.appendChild(orbArea);
+  const tb=document.createElement('div');tb.className='card-type-banner';
+  tb.innerHTML=`<div class="card-type-text" style="color:${tc}">${(gem.type||'').toUpperCase()}</div><div class="card-chakra" style="color:${tc}">${gem.chakra||''}</div>`;
+  content.appendChild(tb);
+  const txb=document.createElement('div');txb.className='card-textbox';
+  const facts=Array.isArray(gem.facts)?gem.facts:[];
+  txb.innerHTML=`<div class="card-flavor" style="color:${tc}">${facts.slice(0,2).join(' ')}</div>`;
+  content.appendChild(txb);
+  const bot=document.createElement('div');bot.className='card-bottom';
+  const sizeStr=gem.diameter?gem.diameter+'mm':'';
+  bot.innerHTML=`<div class="card-origin" style="color:${tc}">${gem.origin||''}${sizeStr?' · '+sizeStr:''}</div><div class="card-rarity-text" style="color:${dotColor}">${(gem.rarity||'').toUpperCase()}</div>`;
+  content.appendChild(bot);
+  body.appendChild(content);wrap.appendChild(body);
+  wrap.addEventListener('click',()=>openModal(gem));
+  return wrap;
+}
+
+function drawOrb(canvas,accentColor){
+  const ctx=canvas.getContext('2d');
+  const s=110,r=s*0.44,cx=s/2,cy=s/2;
+  ctx.clearRect(0,0,s,s);
+  const g=ctx.createRadialGradient(cx-r*.3,cy-r*.35,2,cx,cy,r);
+  g.addColorStop(0,'rgba(196,146,42,0.6)');g.addColorStop(0.5,'rgba(100,70,10,0.8)');g.addColorStop(1,'rgba(20,14,2,0.9)');
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  const hi=ctx.createRadialGradient(cx-r*.32,cy-r*.38,0,cx-r*.16,cy-r*.18,r*.55);
+  hi.addColorStop(0,'rgba(255,255,255,0.6)');hi.addColorStop(0.4,'rgba(255,255,255,0.15)');hi.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=hi;ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,0.22)';ctx.lineWidth=0.8;ctx.stroke();
+}
+
+// ── LIST VIEW ────────────────────────────────────────────────────────────────
+function renderList(){
+  const cat=document.getElementById('cat-sel').value;
+  const rar=document.getElementById('rarity-sel').value;
+  let pool=filteredGems().filter(g=>(cat==='all'||g.cat===cat)&&(rar==='all'||g.rarity===rar));
+  let h='';
+  pool.forEach(g=>{
+    const hi=!!(g.photo);
+    const thumb=hi?`<img class="list-thumb lbt" src="${g.photo}" data-id="${g.id}" loading="lazy">`:`<div class="list-thumb-empty">🔮</div>`;
+    h+=`<tr>
+      <td>${thumb}</td>
+      <td><div class="list-name lbn" data-id="${g.id}">${esc(g.name||'')}</div><div style="font-size:.6rem;color:#c8b870;font-style:italic;">${esc(g.rarity||'')}</div></td>
+      <td>${esc(g.type||'')}</td>
+      <td>${g.diameter?g.diameter+'mm':''}</td>
+      <td>${g.weight?g.weight+'g':''}</td>
+      <td>${esc(g.origin||'')}${g.location?'<br><span style="font-size:.68rem;font-style:italic;color:#c8c0b4;">'+esc(g.location)+'</span>':''}</td>
+      <td style="font-size:.75rem;font-style:italic;">${esc(g.prov||'')}</td>
+      <td style="font-size:.7rem;">${esc(getCabNames(g).join(', '))}</td>
+      <td><div class="list-acts"><button class="list-act lebt" data-id="${g.id}">Edit</button><button class="list-act del ldbt" data-id="${g.id}">Del</button></div></td>
+    </tr>`;
+  });
+  document.getElementById('list-body').innerHTML=h;
+  document.getElementById('list-body').onclick=ev=>{
+    const t=ev.target;
+    if(t.classList.contains('lebt')){ev.stopPropagation();openEditPanel(GEMS.find(g=>g.id===parseInt(t.getAttribute('data-id'))));return;}
+    if(t.classList.contains('ldbt')){ev.stopPropagation();openDel(parseInt(t.getAttribute('data-id')),'gem');return;}
+    if(t.classList.contains('lbt')||t.classList.contains('lbn')){openModal(GEMS.find(g=>g.id===parseInt(t.getAttribute('data-id'))));return;}
+  };
+}
+
+// ── CABINETS ─────────────────────────────────────────────────────────────────
+function renderCabinets(){
+  const wrap=document.getElementById('cab-grid-wrap');
+  let h='<div class="cab-grid">';
+  CABINETS.forEach(c=>{
+    const cnt=GEMS.filter(g=>gemCabinets(g).indexOf(c.id)>-1).length;
+    h+=`<div class="cab-card"><div class="cab-icon">🔮</div><div class="cab-name">${esc(c.name)}</div>${c.location?'<div class="cab-loc">'+esc(c.location)+'</div>':''}<div class="cab-count">${cnt} sphere${cnt!==1?'s':''}</div><div class="cab-acts"><button class="cab-act cebt" data-cid="${c.id}">✎ Edit</button><button class="cab-act del cdbt" data-cid="${c.id}">✕ Remove</button></div></div>`;
+  });
+  h+=`<div class="add-cab-card" onclick="openAddCabModal()"><div style="font-size:1.4rem;color:#f0c255;">＋</div><div class="add-cab-label">New Stand</div></div>`;
+  h+='</div>';
+  wrap.innerHTML=h;
+  wrap.querySelector('.cab-grid').onclick=ev=>{
+    const cebt=ev.target.closest('.cebt');const cdbt=ev.target.closest('.cdbt');
+    if(cebt){openEditCabModal(parseInt(cebt.getAttribute('data-cid')));return;}
+    if(cdbt){openDel(parseInt(cdbt.getAttribute('data-cid')),'cab');return;}
+  };
+}
+
+document.getElementById('btn-add-cab').onclick=openAddCabModal;
+function openAddCabModal(){editingCabId=null;document.getElementById('cab-form-title').textContent='✦ NEW DISPLAY STAND ✦';document.getElementById('cf-name').value='';document.getElementById('cf-loc').value='';document.getElementById('cf-desc').value='';document.getElementById('cab-modal').classList.add('open');}
+function openEditCabModal(id){const c=CABINETS.find(x=>x.id===id);if(!c)return;editingCabId=id;document.getElementById('cab-form-title').textContent='✦ EDIT STAND ✦';document.getElementById('cf-name').value=c.name||'';document.getElementById('cf-loc').value=c.location||'';document.getElementById('cf-desc').value=c.desc||'';document.getElementById('cab-modal').classList.add('open');}
+function closeCabModal(){document.getElementById('cab-modal').classList.remove('open');editingCabId=null;}
+function maybeCloseCabModal(e){if(e.target===document.getElementById('cab-modal'))closeCabModal();}
+
+async function saveCabinet(){
+  const nm=document.getElementById('cf-name').value.trim();
+  if(!nm){showToast('Please enter a stand name');return;}
+  const lo=document.getElementById('cf-loc').value.trim();
+  const ds=document.getElementById('cf-desc').value.trim();
+  if(editingCabId!==null){
+    const i=CABINETS.findIndex(x=>x.id===editingCabId);
+    if(i>=0){CABINETS[i].name=nm;CABINETS[i].location=lo;CABINETS[i].desc=ds;await dbPut(CAB_STORE,CABINETS[i]);}
+  } else {
+    const nc={name:nm,location:lo,desc:ds};
+    const newId=await dbPut(CAB_STORE,nc);nc.id=newId;CABINETS.push(nc);
+  }
+  closeCabModal();renderCabinets();renderCabBar();showToast('Stand saved');
+}
+
+// ── DETAIL MODAL ─────────────────────────────────────────────────────────────
+function openModal(gem){
+  const modal=document.getElementById('detail-modal');
+  const inner=document.getElementById('detail-inner');
+  modal.className='detail-modal open';
+  inner.innerHTML='';
+  const dotColor=RARITY_COLOR[gem.rarity]||'#c8b870';
+  const facts=Array.isArray(gem.facts)?gem.facts:[];
+  const closeBtn=document.createElement('button');closeBtn.className='modal-close';closeBtn.textContent='×';closeBtn.onclick=closeModal;inner.appendChild(closeBtn);
+  const nameEl=document.createElement('div');nameEl.className='modal-gem-name';nameEl.textContent=gem.name;inner.appendChild(nameEl);
+  const typeEl=document.createElement('div');typeEl.className='modal-type';typeEl.textContent=[gem.type,gem.cat,gem.chakra].filter(Boolean).join(' · ');inner.appendChild(typeEl);
+  if(gem.photo){
+    const wrap=document.createElement('div');wrap.className='modal-photo-wrap';
+    const deg=getRotation(gem.id);const sc=(deg===90||deg===270)?'scale(1.5)':'scale(1)';const pos=getPosition(gem.id);
+    const pd=document.createElement('div');pd.className='modal-photo';pd.style.cssText=`background-image:url(${gem.photo});background-position:${pos};transform:rotate(${deg}deg) ${sc};`;
+    let ms=null,msp=null,mm=false;
+    pd.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];ms={x:t.clientX,y:t.clientY};const p=pd.style.backgroundPosition.split(' ');msp={x:parseFloat(p[0])||50,y:parseFloat(p[1])||30};mm=false;},{passive:true});
+    pd.addEventListener('touchmove',e=>{if(!ms||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-ms.x,dy=t.clientY-ms.y;if(!mm&&Math.abs(dx)<6&&Math.abs(dy)<6)return;mm=true;e.stopPropagation();const nx=Math.max(0,Math.min(100,msp.x-(dx/pd.offsetWidth)*100));const ny=Math.max(0,Math.min(100,msp.y-(dy/pd.offsetHeight)*100));pd.style.backgroundPosition=`${nx.toFixed(1)}% ${ny.toFixed(1)}%`;},{passive:false});
+    pd.addEventListener('touchend',()=>{if(mm)setPosition(gem.id,pd.style.backgroundPosition);ms=null;});
+    const rotBtn=document.createElement('button');rotBtn.className='modal-rotate-btn';rotBtn.textContent='↻';
+    rotBtn.onclick=()=>{const nd=(getRotation(gem.id)+90)%360;setRotation(gem.id,nd);const nsc=(nd===90||nd===270)?'scale(1.5)':'scale(1)';pd.style.transition='transform 0.18s ease';pd.style.transform=`rotate(${nd}deg) ${nsc}`;};
+    wrap.appendChild(pd);wrap.appendChild(rotBtn);inner.appendChild(wrap);
+  }
+  // Fields grid
+  const fields=[];
+  if(gem.diameter||gem.weight) fields.push({l:'Size / Weight',v:(gem.diameter?gem.diameter+'mm':'')+(gem.diameter&&gem.weight?' · ':'' )+(gem.weight?gem.weight+'g':'')});
+  if(gem.mohs) fields.push({l:'Mohs Hardness',v:gem.mohs});
+  if(gem.origin||gem.location) fields.push({l:'Origin',v:(gem.origin||'')+(gem.location?' — '+gem.location:'')});
+  if(gem.prov) fields.push({l:'Provenance',v:gem.prov});
+  const cabNames=getCabNames(gem);
+  if(cabNames.length) fields.push({l:'Display Stands',v:cabNames.join(', ')});
+  if(fields.length){
+    const mf=document.createElement('div');mf.className='modal-fields';
+    mf.innerHTML=fields.map(f=>`<div class="modal-field"><div class="modal-field-label">${f.l}</div><div class="modal-field-val">${esc(f.v)}</div></div>`).join('');
+    inner.appendChild(mf);
+  }
+  if(gem.flavor){const fs=document.createElement('div');fs.className='modal-section';fs.innerHTML=`<div class="modal-section-title">Description</div><div style="font-size:12px;line-height:1.7;color:#e0d8cc;font-style:italic;">${esc(gem.flavor)}</div>`;inner.appendChild(fs);}
+  if(facts.length){const fe=document.createElement('div');fe.className='modal-section';fe.innerHTML=`<div class="modal-section-title">Gemological Notes</div><ul class="modal-facts">${facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`;inner.appendChild(fe);}
+  const actions=document.createElement('div');actions.className='modal-actions';
+  const editBtn=document.createElement('button');editBtn.className='modal-btn';editBtn.textContent='Edit';editBtn.onclick=()=>{closeModal();openEditPanel(gem);};
+  const delBtn=document.createElement('button');delBtn.className='modal-btn danger';delBtn.textContent='Delete';delBtn.onclick=()=>{closeModal();openDel(gem.id,'gem');};
+  actions.appendChild(editBtn);actions.appendChild(delBtn);inner.appendChild(actions);
+}
+function closeModal(){document.getElementById('detail-modal').className='detail-modal';}
+function maybeCloseModal(e){if(e.target===document.getElementById('detail-modal'))closeModal();}
+
+// ── ADD / EDIT PANEL ──────────────────────────────────────────────────────────
+function fillCabCheckboxes(selectedIds){
+  const wrap=document.getElementById('f-cabinets-wrap');
+  selectedIds=selectedIds||[];
+  if(!CABINETS.length){
+    wrap.innerHTML='<div class="cab-check-empty">No display stands yet — create one in the Display Stands tab.</div>';
+    return;
+  }
+  let h='';
+  CABINETS.forEach(c=>{
+    const checked=selectedIds.indexOf(c.id)>-1?' checked':'';
+    h+=`<label class="cab-check-row"><input type="checkbox" class="cab-check" value="${c.id}"${checked}>${esc(c.name)}</label>`;
+  });
+  wrap.innerHTML=h;
+}
+function getSelectedCabinets(){
+  const boxes=document.querySelectorAll('.cab-check:checked');
+  return Array.prototype.map.call(boxes,b=>parseInt(b.value));
+}
+function openAddPanel(){
+  editingId=null;photoDataURL=null;
+  document.getElementById('form-title').textContent='Add New Sphere';
+  ['f-name','f-cat','f-type','f-mohs','f-diameter','f-weight','f-origin','f-location','f-prov','f-chakra','f-flavor','f-facts'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('f-rarity').value='Common';
+  document.getElementById('f-photo').value='';
+  const prev=document.getElementById('photo-preview-img');prev.src='';prev.style.display='none';
+  fillCabCheckboxes([]);
+  document.getElementById('add-panel').classList.add('open');
+}
+function openEditPanel(gem){
+  if(!gem)return;
+  editingId=gem.id;photoDataURL=gem.photo||null;
+  document.getElementById('form-title').textContent='Edit Sphere';
+  document.getElementById('f-name').value=gem.name||'';
+  document.getElementById('f-cat').value=gem.cat||'';
+  document.getElementById('f-type').value=gem.type||'';
+  document.getElementById('f-rarity').value=gem.rarity||'Common';
+  document.getElementById('f-mohs').value=gem.mohs||'';
+  document.getElementById('f-diameter').value=gem.diameter||'';
+  document.getElementById('f-weight').value=gem.weight||'';
+  document.getElementById('f-origin').value=gem.origin||'';
+  document.getElementById('f-location').value=gem.location||'';
+  document.getElementById('f-prov').value=gem.prov||'';
+  document.getElementById('f-chakra').value=gem.chakra||'';
+  document.getElementById('f-flavor').value=gem.flavor||'';
+  document.getElementById('f-facts').value=(gem.facts||[]).join('\n');
+  document.getElementById('f-photo').value='';
+  const prev=document.getElementById('photo-preview-img');
+  if(gem.photo){prev.src=gem.photo;prev.style.display='block';}else{prev.style.display='none';}
+  fillCabCheckboxes(gemCabinets(gem));
+  document.getElementById('add-panel').classList.add('open');
+}
+function closeAddPanel(){document.getElementById('add-panel').classList.remove('open');editingId=null;photoDataURL=null;}
+function previewPhoto(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{photoDataURL=e.target.result;const prev=document.getElementById('photo-preview-img');prev.src=photoDataURL;prev.style.display='block';};reader.readAsDataURL(file);}
+
+async function saveGem(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){showToast('Please enter a sphere name');return;}
+  const factsRaw=document.getElementById('f-facts').value.trim();
+  const facts=factsRaw?factsRaw.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,5):[];
+  const rarity=document.getElementById('f-rarity').value;
+  const cabIds=getSelectedCabinets();
+  const gem={
+    name,cat:document.getElementById('f-cat').value.trim()||'Uncategorized',
+    type:document.getElementById('f-type').value.trim(),rarity,
+    mohs:parseFloat(document.getElementById('f-mohs').value)||'',
+    diameter:parseInt(document.getElementById('f-diameter').value)||null,
+    weight:parseInt(document.getElementById('f-weight').value)||null,
+    origin:document.getElementById('f-origin').value.trim(),
+    location:document.getElementById('f-location').value.trim(),
+    prov:document.getElementById('f-prov').value.trim(),
+    chakra:document.getElementById('f-chakra').value.trim(),
+    flavor:document.getElementById('f-flavor').value.trim(),
+    facts,photo:photoDataURL||null,
+    cabinets:cabIds,
+    textCol:'rgba(226,216,200,0.95)',bg:['#0d0b1a','#09081a','#04030a'],
+    stats:{power:65,wisdom:70,rarity_n:50,mystique:65},
+  };
+  if(editingId!==null)gem.id=editingId;
+  try{
+    const newId=await dbPut(STORE,gem);
+    if(!gem.id)gem.id=newId;
+    const idx=GEMS.findIndex(g=>g.id===gem.id);
+    if(idx>=0)GEMS[idx]=gem;else GEMS.push(gem);
+    renderCards();closeAddPanel();
+    showToast(editingId!==null?'Sphere updated':'Sphere added to Codex');
+  }catch(err){showToast('Error — '+err.message);}
+}
+
+// ── DELETE ────────────────────────────────────────────────────────────────────
+function openDel(id,type){
+  delPending={id,type};
+  if(type==='gem'){const g=GEMS.find(x=>x.id===id);document.getElementById('del-name').textContent=g?g.name:id;document.getElementById('del-note').textContent='This cannot be undone.';}
+  else{const c=CABINETS.find(x=>x.id===id);document.getElementById('del-name').textContent=c?c.name:id;document.getElementById('del-note').textContent='Spheres in this stand will become unassigned.';}
+  document.getElementById('del-modal').classList.add('open');
+}
+function closeDel(){document.getElementById('del-modal').classList.remove('open');delPending=null;}
+document.getElementById('del-yes-btn').onclick=async()=>{
+  if(!delPending)return;
+  const {id,type}=delPending;
+  if(type==='gem'){
+    await dbDelete(STORE,id);
+    GEMS=GEMS.filter(g=>g.id!==id);
+    renderCards();showToast('Sphere removed');
+  } else {
+    await dbDelete(CAB_STORE,id);
+    CABINETS=CABINETS.filter(c=>c.id!==id);
+    for(const g of GEMS){
+      const cabs=gemCabinets(g);
+      const idx=cabs.indexOf(id);
+      if(idx>-1){cabs.splice(idx,1);g.cabinets=cabs;delete g.cabinet;await dbPut(STORE,g);}
+    }
+    renderCabinets();renderCabBar();renderCards();showToast('Stand removed');
+  }
+  closeDel();
+};
+document.getElementById('del-modal').onclick=ev=>{if(ev.target===document.getElementById('del-modal'))closeDel();};
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ── ESCAPE ────────────────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── GLITTER STARS ─────────────────────────────────────────────────────────────
+(function(){
+  const canvas=document.getElementById('glitter-canvas');
+  const ctx=canvas.getContext('2d');
+  const COLORS=['#ffffff','#b890e8','#9060c0','#d4a8f0','#f0d0ff','#e8b8ff','#c090d8','#a070c0','#f8e8ff'];
+  let stars=[];
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  function makeStar(){return{x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2.5+0.8,color:COLORS[Math.floor(Math.random()*COLORS.length)],alpha:Math.random(),speed:Math.random()*0.003+0.001,phase:Math.random()*Math.PI*2,sparkle:Math.random()>0.6};}
+  function drawSparkle(ctx,x,y,r,alpha,color){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=r*0.6;ctx.beginPath();for(let i=0;i<4;i++){const angle=(i/4)*Math.PI*2;ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(angle)*r*2.5,y+Math.sin(angle)*r*2.5);}ctx.stroke();ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r*0.5,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function init(){resize();stars=Array.from({length:300},makeStar);}
+  function draw(t){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{s.alpha=0.3+0.7*Math.abs(Math.sin(t*s.speed+s.phase));if(s.sparkle)drawSparkle(ctx,s.x,s.y,s.r,s.alpha*0.9,s.color);else{ctx.save();ctx.globalAlpha=s.alpha;ctx.fillStyle=s.color;ctx.shadowColor=s.color;ctx.shadowBlur=s.r*4;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();ctx.restore();}});requestAnimationFrame(draw);}
+  window.addEventListener('resize',()=>{resize();stars=Array.from({length:300},makeStar);});
+  init();requestAnimationFrame(draw);
+})();
+
+// ── START ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
