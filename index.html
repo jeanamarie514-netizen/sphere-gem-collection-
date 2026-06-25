@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gem Sphere Codex</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#ede8f5;--surface:rgba(255,255,255,0.85);--surface2:rgba(255,255,255,0.55);
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --text:#1a1a2e;--text2:#4a4a6a;--text3:#8a8aaa;
+  --accent:#6b9e9a;--accent2:#5a8985;--accent-light:rgba(107,158,154,0.13);
+  --rose:#c4856a;--red:#c04050;
+  --shadow:0 2px 12px rgba(0,0,0,0.07);--shadow-lg:0 8px 32px rgba(0,0,0,0.13);
+  --r:14px;--r-sm:8px;--r-pill:30px;
+}
+html{background:#f0d6e8;}
+body{background:linear-gradient(135deg,#f0d6e8 0%,#d6e8f0 20%,#d6f0e0 40%,#f0f0d6 60%,#f0ddd6 80%,#e0d6f0 100%);background-attachment:fixed;color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── PAGE ── */
+.page{max-width:960px;margin:0 auto;padding:0 14px 100px;}
+
+/* ── MASTHEAD ── */
+.masthead{text-align:center;padding:2.8rem 1rem 2rem;}
+.masthead-eyebrow{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.32em;color:var(--accent);text-transform:uppercase;margin-bottom:0.7rem;}
+.masthead-title{font-family:'Cinzel',serif;font-size:clamp(26px,6vw,50px);font-weight:700;letter-spacing:0.06em;color:var(--text);line-height:1.1;margin-bottom:0.4rem;}
+.masthead-sub{font-size:14px;color:var(--text2);font-style:italic;letter-spacing:0.04em;margin-bottom:1.8rem;}
+.masthead-divider{display:flex;align-items:center;justify-content:center;gap:12px;}
+.masthead-divider-line{flex:1;max-width:140px;height:1px;background:var(--border);}
+.masthead-divider-gem{font-size:16px;}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;justify-content:center;border-bottom:1.5px solid var(--border);margin-bottom:0;}
+.nav-tab{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.16em;padding:10px 22px;background:none;border:none;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .2s;touch-action:manipulation;}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;padding:1.2rem 0 0.6rem;}
+.ctrl-btn{font-family:'Cinzel',serif;font-size:9.5px;font-weight:600;letter-spacing:0.14em;padding:9px 18px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent);}
+.ctrl-btn.active-view{background:var(--accent);border-color:var(--accent);color:#fff;}
+.ctrl-select{font-family:'Inter',sans-serif;font-size:16px;font-weight:500;padding:9px 32px 9px 14px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.ctrl-select:focus{border-color:var(--accent);}
+.ctrl-select option{background:#fff;color:var(--text);}
+
+/* ── SEARCH ── */
+.search-wrap{margin:0 0 12px;position:relative;}
+.search-input{width:100%;border:1.5px solid var(--border);border-radius:var(--r-pill);padding:10px 16px 10px 40px;font-family:'Inter',sans-serif;font-size:15px;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--text3);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
+
+/* ── CABINET FILTER CHIPS ── */
+.cab-bar{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;margin-bottom:4px;scrollbar-width:none;}
+.cab-bar::-webkit-scrollbar{display:none;}
+.cab-chip{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.12em;padding:5px 14px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;touch-action:manipulation;}
+.cab-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* ── SPHERE COUNT ── */
+.sphere-count{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.18em;color:var(--text3);text-align:center;margin-bottom:14px;text-transform:uppercase;}
+
+/* ── PHOTO GRID ── */
+#view-grid{display:block;}
+.sph-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:520px){.sph-grid{grid-template-columns:repeat(3,1fr);gap:14px;}}
+@media(min-width:760px){.sph-grid{grid-template-columns:repeat(4,1fr);gap:16px;}}
+
+/* ── SPHERE CARD ── */
+.sph-card{aspect-ratio:1;position:relative;border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--surface2);box-shadow:var(--shadow);transition:transform .25s,box-shadow .25s;-webkit-tap-highlight-color:transparent;}
+.sph-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.sph-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.sph-no-photo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+.sph-orb-canvas{width:80px;height:80px;}
+.sph-overlay{position:absolute;bottom:0;left:0;right:0;padding:28px 10px 9px;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.62));pointer-events:none;}
+.sph-name{font-family:'Cinzel',serif;font-size:10.5px;font-weight:600;color:#fff;letter-spacing:0.03em;line-height:1.25;text-shadow:0 1px 5px rgba(0,0,0,0.6);}
+.sph-sub{font-family:'Inter',sans-serif;font-size:9px;color:rgba(255,255,255,0.72);margin-top:2px;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
+.sph-rarity-dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.8);box-shadow:0 0 6px currentColor;}
+.sph-cab-badge{position:absolute;top:8px;left:8px;font-family:'Inter',sans-serif;font-size:7px;font-weight:600;letter-spacing:.05em;background:rgba(255,255,255,0.92);color:#333;padding:2px 7px;border-radius:4px;max-width:calc(100% - 40px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ── EMPTY STATE ── */
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;}
+.empty-state-icon{font-size:44px;margin-bottom:1rem;opacity:0.3;}
+.empty-state-title{font-family:'Cinzel',serif;font-size:15px;color:var(--accent);letter-spacing:0.16em;margin-bottom:0.5rem;}
+.empty-state-text{font-size:14px;color:var(--text3);line-height:1.7;}
+
+/* ── LIST VIEW ── */
+#view-list{display:none;}
+.list-wrap{border-radius:var(--r);border:1.5px solid var(--border);background:var(--surface);overflow:hidden;}
+.list-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.list-table th{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.13em;color:var(--accent);padding:10px 12px;border-bottom:1.5px solid var(--border);text-align:left;background:var(--surface2);}
+.list-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text);}
+.list-table tr:last-child td{border-bottom:none;}
+.list-table tr:hover td{background:var(--accent-light);}
+.list-thumb{width:40px;height:40px;border-radius:var(--r-sm);object-fit:cover;display:block;cursor:pointer;}
+.list-thumb-empty{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.list-name{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;color:var(--text);letter-spacing:.03em;cursor:pointer;}
+.list-name:hover{color:var(--accent);}
+.list-acts{display:flex;gap:4px;}
+.list-act{font-family:'Inter',sans-serif;font-size:.52rem;letter-spacing:.04em;padding:4px 9px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;touch-action:manipulation;}
+.list-act.del{border-color:rgba(192,64,80,.3);color:var(--red);}
+
+/* ── CABINETS TAB ── */
+#tab-cabinets{display:none;padding-top:1.4rem;}
+.cab-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(min-width:500px){.cab-grid{grid-template-columns:repeat(3,1fr);}}
+.cab-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:14px;transition:all .2s;cursor:pointer;}
+.cab-card:hover{border-color:var(--accent);box-shadow:var(--shadow);}
+.cab-icon{font-size:1.6rem;margin-bottom:6px;}
+.cab-name{font-family:'Cinzel',serif;font-size:.7rem;font-weight:600;color:var(--text);letter-spacing:.04em;margin-bottom:2px;}
+.cab-loc{font-size:.72rem;font-style:italic;color:var(--text2);}
+.cab-count{font-family:'Inter',sans-serif;font-size:.58rem;color:var(--accent);margin-top:6px;font-weight:500;}
+.cab-acts{display:flex;gap:4px;margin-top:8px;}
+.cab-act{font-family:'Inter',sans-serif;font-size:.5rem;letter-spacing:.04em;padding:4px 9px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;touch-action:manipulation;}
+.cab-act.del{border-color:rgba(192,64,80,.3);color:var(--red);}
+.add-cab-card{background:var(--accent-light);border:1.5px dashed rgba(107,158,154,0.4);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:100px;transition:all .2s;}
+.add-cab-card:hover{background:rgba(107,158,154,0.2);}
+.add-cab-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;color:var(--accent);margin-top:4px;}
+
+/* ── ADD FAB ── */
+.add-fab{position:fixed;bottom:26px;right:20px;z-index:50;width:52px;height:52px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;font-size:24px;color:#fff;box-shadow:0 4px 20px rgba(107,158,154,0.55);transition:transform .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
+.add-fab:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(107,158,154,0.65);}
+
+/* ── DETAIL MODAL ── */
+.detail-modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);padding:0;}
+@media(min-width:600px){.detail-modal{align-items:center;padding:1rem;}}
+.detail-modal.open{display:flex;}
+.detail-inner{background:var(--surface);border-radius:var(--r) var(--r) 0 0;max-width:480px;width:100%;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);}
+@media(min-width:600px){.detail-inner{border-radius:var(--r);}}
+.detail-photo{width:100%;height:260px;background-size:cover;background-position:center;position:relative;}
+.detail-photo-img{width:100%;height:260px;object-fit:cover;display:block;}
+.detail-rotate-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.9);border:none;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;box-shadow:var(--shadow);}
+.modal-close{position:absolute;top:10px;left:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.9);border:none;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;box-shadow:var(--shadow);color:var(--text);}
+.detail-body{padding:1.4rem 1.4rem 1.8rem;}
+.detail-name{font-family:'Cinzel',serif;font-size:clamp(16px,4vw,22px);font-weight:700;color:var(--text);letter-spacing:.04em;line-height:1.2;margin-bottom:3px;}
+.detail-type{font-family:'Inter',sans-serif;font-size:11px;color:var(--accent);letter-spacing:0.14em;text-transform:uppercase;font-weight:500;margin-bottom:1rem;}
+.detail-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
+.detail-field{display:flex;flex-direction:column;gap:2px;}
+.detail-field-label{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;font-weight:500;}
+.detail-field-val{font-size:13px;color:var(--text);}
+.detail-section-title{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;font-weight:600;margin:10px 0 5px;}
+.detail-facts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.detail-facts li{font-size:13px;line-height:1.6;color:var(--text2);padding-left:14px;position:relative;}
+.detail-facts li::before{content:'◆';position:absolute;left:0;font-size:5px;color:var(--accent);top:6px;}
+.detail-actions{display:flex;gap:8px;margin-top:1.2rem;}
+.detail-btn{flex:1;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:0.14em;padding:12px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:all .2s;touch-action:manipulation;}
+.detail-btn:hover{border-color:var(--accent);color:var(--accent);}
+.detail-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.detail-btn.primary:hover{background:var(--accent2);}
+.detail-btn.danger{border-color:rgba(192,64,80,.3);color:var(--red);}
+
+/* ── ADD / EDIT PANEL ── */
+.add-panel{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);padding:0;}
+.add-panel.open{display:flex;}
+@media(min-width:600px){.add-panel{align-items:center;padding:1rem;}}
+.add-form{background:var(--surface);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:1.6rem 1.4rem 2rem;box-shadow:var(--shadow-lg);}
+@media(min-width:600px){.add-form{border-radius:var(--r);}}
+.add-form h2{font-family:'Cinzel',serif;font-size:15px;color:var(--text);letter-spacing:.1em;margin-bottom:1.2rem;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase;font-weight:500;}
+.form-field input,.form-field select,.form-field textarea{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;padding:9px 11px;border-radius:var(--r-sm);outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--accent);}
+.form-field select option{background:#fff;}
+.form-field textarea{resize:vertical;min-height:64px;line-height:1.5;}
+#f-cabinets-wrap{display:flex;flex-direction:column;gap:2px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:4px;}
+.cab-check-row{display:flex;align-items:center;gap:10px;width:100%;font-family:'Inter',sans-serif;font-size:16px;color:var(--text);cursor:pointer;padding:10px 8px;border-radius:6px;-webkit-tap-highlight-color:var(--accent-light);touch-action:manipulation;transition:background .1s;background:none;border:none;text-align:left;}
+.cab-check-row:active{background:var(--accent-light);}
+.cab-check-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;transition:all .15s;}
+.cab-check-row.on .cab-check-box{background:var(--accent);border-color:var(--accent);}
+.cab-check-empty{font-size:13px;font-style:italic;color:var(--text3);padding:4px 0;}
+.photo-upload-area{grid-column:1/-1;border:2px dashed var(--border);border-radius:var(--r-sm);padding:1.1rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--surface2);}
+.photo-upload-area:hover{border-color:var(--accent);background:var(--accent-light);}
+.photo-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+/* ── PURCHASE MATCH ── */
+.purch-field{grid-column:1/-1;display:flex;flex-direction:column;gap:4px;margin-bottom:2px;}
+.purch-field label{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase;font-weight:500;}
+.purch-results{display:flex;flex-direction:column;gap:3px;margin-top:5px;}
+.purch-row{display:block;width:100%;text-align:left;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.7);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:var(--accent-light);transition:background .1s;}
+.purch-row:active{background:var(--accent-light);}
+.purch-status{font-family:'Inter',sans-serif;font-size:11px;font-style:italic;color:var(--text3);margin-top:4px;}
+.purch-empty{font-size:12px;font-style:italic;color:var(--text3);padding:6px 0;}
+.photo-upload-label{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);font-weight:500;}
+.photo-preview{width:100%;max-height:150px;object-fit:cover;border-radius:var(--r-sm);margin-top:8px;display:none;}
+.form-actions{display:flex;gap:8px;margin-top:1.2rem;grid-column:1/-1;}
+.form-btn{flex:1;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;padding:13px;border-radius:var(--r-pill);border:1.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s;touch-action:manipulation;}
+.form-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.form-btn.primary:hover{background:var(--accent2);}
+.form-btn.cancel-btn{color:var(--text3);}
+
+/* ── CABINET MODAL ── */
+.cab-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);padding:1rem;}
+.cab-modal.open{display:flex;}
+.cab-mbox{background:var(--surface);border-radius:var(--r);max-width:360px;width:100%;padding:1.6rem 1.4rem;box-shadow:var(--shadow-lg);}
+.cab-mbox h2{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;color:var(--text);text-align:center;margin-bottom:14px;}
+.cab-mbox input{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;padding:9px 11px;border-radius:var(--r-sm);outline:none;width:100%;transition:border-color .2s;}
+.cab-mbox input:focus{border-color:var(--accent);}
+.cab-mbox label{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase;font-weight:500;display:block;margin-bottom:4px;}
+
+/* ── DELETE CONFIRM ── */
+.del-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);padding:1rem;}
+.del-modal.open{display:flex;}
+.del-mbox{background:var(--surface);border-radius:var(--r);max-width:300px;width:100%;padding:1.6rem 1.4rem;text-align:center;box-shadow:var(--shadow-lg);}
+.del-mbox h2{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:var(--red);margin-bottom:10px;}
+.del-name{font-family:'Cinzel',serif;font-size:15px;color:var(--text);margin-bottom:8px;}
+.del-note{font-size:12px;font-style:italic;color:var(--text2);margin-bottom:16px;line-height:1.5;}
+.del-acts{display:flex;gap:8px;}
+.del-acts button{flex:1;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;padding:12px;border-radius:var(--r-pill);cursor:pointer;touch-action:manipulation;}
+.del-keep{background:transparent;border:1.5px solid var(--border);color:var(--text2);}
+.del-yes{background:var(--red);border:none;color:#fff;}
+
+/* ── BULK MODAL ── */
+.bulk-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);padding:1rem;}
+.bulk-modal.open{display:flex;}
+.bulk-box{background:var(--surface);border-radius:var(--r);max-width:440px;width:100%;max-height:92vh;overflow-y:auto;padding:1.6rem 1.4rem;box-shadow:var(--shadow-lg);}
+.bulk-box h2{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.18em;color:var(--text);text-align:center;margin-bottom:6px;}
+.bulk-progress{text-align:center;font-family:'Inter',sans-serif;font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:500;}
+.bulk-box input{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;padding:9px 11px;border-radius:var(--r-sm);outline:none;width:100%;transition:border-color .2s;}
+.bulk-box input:focus{border-color:var(--accent);}
+.bulk-box label{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase;font-weight:500;display:block;margin-bottom:4px;}
+.bulk-field{margin-bottom:8px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--text);color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.04em;padding:10px 20px;border-radius:var(--r-pill);opacity:0;transition:all .3s;z-index:400;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="masthead">
+    <div class="masthead-eyebrow">Family Stone Hunters</div>
+    <div class="masthead-title">Gem Sphere Codex</div>
+    <div class="masthead-sub">A catalogue of crystal spheres</div>
+    <div class="masthead-divider">
+      <div class="masthead-divider-line"></div>
+      <div class="masthead-divider-gem">🔮</div>
+      <div class="masthead-divider-line"></div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="collection">Collection</button>
+    <button class="nav-tab" data-tab="cabinets">Display Stands</button>
+  </div>
+
+  <div id="tab-collection">
+    <div class="toolbar">
+      <select class="ctrl-select" id="rarity-sel" onchange="renderCards()">
+        <option value="all">All Rarities</option>
+        <option value="Common">Common</option>
+        <option value="Uncommon">Uncommon</option>
+        <option value="Rare">Rare</option>
+        <option value="Ultra Rare">Ultra Rare</option>
+      </select>
+      <button class="ctrl-btn active-view" id="btn-grid-view">⊞ Grid</button>
+      <button class="ctrl-btn" id="btn-list-view">≡ List</button>
+      <label class="ctrl-btn" style="position:relative;overflow:hidden;">⚡ Bulk Add<input type="file" id="bulk-photo-input" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;"></label>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search" type="text" placeholder="Search spheres…" autocomplete="off" autocorrect="off">
+    </div>
+    <div class="cab-bar" id="cabinet-bar"></div>
+    <div class="sphere-count" id="card-count"></div>
+    <div id="view-grid"><div class="sph-grid" id="card-grid"></div></div>
+    <div id="view-list">
+      <div class="list-wrap">
+        <table class="list-table">
+          <thead><tr>
+            <th></th><th>Name</th><th>Type</th><th>Size</th>
+            <th>Origin</th><th>Provenance</th><th>Stand</th><th></th>
+          </tr></thead>
+          <tbody id="list-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-cabinets">
+    <div class="toolbar">
+      <button class="ctrl-btn" id="btn-add-cab" style="background:var(--accent);border-color:var(--accent);color:#fff;">＋ New Display Stand</button>
+    </div>
+    <div id="cab-grid-wrap"></div>
+  </div>
+</div>
+
+<button class="add-fab" onclick="openAddPanel()" title="Add Sphere">＋</button>
+
+<!-- ADD / EDIT PANEL -->
+<div class="add-panel" id="add-panel">
+  <div class="add-form">
+    <h2 id="form-title">Add New Sphere</h2>
+    <div class="form-grid">
+      <div class="purch-field"><label>Match a Purchase (optional)</label><input type="text" id="f-purch-search" placeholder="e.g. fluorite sphere" style="background:rgba(255,255,255,0.7);border:1.5px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;padding:9px 11px;border-radius:var(--r-sm);outline:none;width:100%;"><div class="purch-results" id="f-purch-results"></div><div class="purch-status" id="f-purch-status"></div></div>
+      <div class="form-field full"><label>Sphere Name</label><input type="text" id="f-name" placeholder="e.g. Labradorite Sphere"></div>
+      <div class="form-field"><label>Category</label><input type="text" id="f-cat" placeholder="e.g. Feldspar"></div>
+      <div class="form-field"><label>Mineral Type</label><input type="text" id="f-type" placeholder="e.g. Labradorite"></div>
+      <div class="form-field"><label>Rarity</label>
+        <select id="f-rarity"><option>Common</option><option>Uncommon</option><option>Rare</option><option>Ultra Rare</option></select>
+      </div>
+      <div class="form-field"><label>Mohs Hardness</label><input type="number" id="f-mohs" step="0.5" min="1" max="10" placeholder="7"></div>
+      <div class="form-field"><label>Diameter (mm)</label><input type="number" id="f-diameter" step="1" min="1" placeholder="60"></div>
+      <div class="form-field"><label>Weight (g)</label><input type="number" id="f-weight" step="1" min="1" placeholder="250"></div>
+      <div class="form-field"><label>Country / Origin</label><input type="text" id="f-origin" placeholder="e.g. Madagascar"></div>
+      <div class="form-field"><label>Mine / Location</label><input type="text" id="f-location" placeholder="e.g. Ambositra"></div>
+      <div class="form-field full"><label>Provenance</label><input type="text" id="f-prov" placeholder="e.g. Tucson Gem Show 2024"></div>
+      <div class="form-field"><label>Chakra</label><input type="text" id="f-chakra" placeholder="e.g. Crown"></div>
+      <div class="form-field full"><label>Display Stands</label><div id="f-cabinets-wrap"></div></div>
+      <div class="form-field full"><label>Description</label><input type="text" id="f-flavor" placeholder="Short description"></div>
+      <div class="form-field full"><label>Facts (one per line)</label><textarea id="f-facts" placeholder="Enter a fact&#10;Enter another fact"></textarea></div>
+      <div class="photo-upload-area">
+        <input type="file" id="f-photo" accept="image/*" onchange="previewPhoto(this)">
+        <div class="photo-upload-label">📷 Tap to upload photo</div>
+        <img class="photo-preview" id="photo-preview-img" alt="">
+      </div>
+      <div class="form-actions">
+        <button class="form-btn cancel-btn" onclick="closeAddPanel()">Cancel</button>
+        <button class="form-btn primary" onclick="saveGem()">Save Sphere</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-modal" id="detail-modal" onclick="maybeCloseDetail(event)">
+  <div class="detail-inner" id="detail-inner"></div>
+</div>
+
+<!-- CABINET MODAL -->
+<div class="cab-modal" id="cab-modal" onclick="maybeCloseCabModal(event)">
+  <div class="cab-mbox">
+    <h2 id="cab-form-title">New Display Stand</h2>
+    <div style="margin-bottom:10px;"><label>Stand Name</label><input type="text" id="cf-name" placeholder="Main Display Shelf"></div>
+    <div style="margin-bottom:10px;"><label>Location</label><input type="text" id="cf-loc" placeholder="Living room bookshelf"></div>
+    <div style="margin-bottom:14px;"><label>Description</label><input type="text" id="cf-desc" placeholder="e.g. Wooden 3-tier stand"></div>
+    <div class="form-actions" style="margin-top:0;">
+      <button class="form-btn cancel-btn" onclick="closeCabModal()">Cancel</button>
+      <button class="form-btn primary" onclick="saveCabinet()">Save Stand</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="del-modal" id="del-modal">
+  <div class="del-mbox">
+    <h2>Remove?</h2>
+    <div class="del-name" id="del-name"></div>
+    <div class="del-note" id="del-note">This cannot be undone.</div>
+    <div class="del-acts">
+      <button class="del-keep" onclick="closeDel()">Keep It</button>
+      <button class="del-yes" id="del-yes-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- BULK ADD -->
+<div class="bulk-modal" id="bulk-modal">
+  <div class="bulk-box">
+    <h2>Bulk Add</h2>
+    <div class="bulk-progress" id="bulk-progress"></div>
+    <img id="bulk-photo-prev" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;display:none;margin-bottom:12px;" alt="">
+    <div class="bulk-field"><label style="font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase;font-weight:500;display:block;margin-bottom:4px;">Match a Purchase (optional)</label><input type="text" id="bf-purch-search" placeholder="e.g. fluorite sphere" style="background:rgba(255,255,255,0.7);border:1.5px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;padding:9px 11px;border-radius:var(--r-sm);outline:none;width:100%;"><div class="purch-results" id="bf-purch-results"></div><div class="purch-status" id="bf-purch-status"></div></div>
+    <div class="bulk-field"><label>Sphere Name</label><input type="text" id="bf-name" placeholder="e.g. Labradorite Sphere"></div>
+    <div class="bulk-field"><label>Category</label><input type="text" id="bf-cat" placeholder="e.g. Feldspar"></div>
+    <div class="bulk-field"><label>Country / Origin</label><input type="text" id="bf-origin" placeholder="e.g. Madagascar"></div>
+    <div class="bulk-field"><label>Mine / Location</label><input type="text" id="bf-location" placeholder="e.g. Ambositra"></div>
+    <div class="bulk-field"><label>Provenance</label><input type="text" id="bf-prov" placeholder="e.g. Tucson Gem Show"></div>
+    <div class="bulk-field"><label>Display Stands</label><div id="bf-cabinets-wrap" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:4px;"></div></div>
+    <div id="bulk-ferr" style="display:none;background:#fff0f0;border:1px solid #fcc;border-radius:6px;padding:8px 11px;font-size:12px;color:var(--red);margin-top:6px;"></div>
+    <div class="form-actions" style="margin-top:12px;">
+      <button class="form-btn cancel-btn" id="bulk-cancel">Stop</button>
+      <button class="form-btn" id="bulk-skip" style="border-color:var(--border);color:var(--text2);">Skip</button>
+      <button class="form-btn primary" id="bulk-save">Save &amp; Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DB ──────────────────────────────────────────────────────────────────────
+const DB_NAME='GemSphereCodex', DB_VER=2, STORE='gems', CAB_STORE='cabinets';
+const RARITY_COLOR={Common:'#9b9b9b',Uncommon:'#4caf78',Rare:'#b87333','Ultra Rare':'#8b1a2a'};
+const RARITY_DOTS={Common:1,Uncommon:2,Rare:3,'Ultra Rare':4};
+
+let db=null, GEMS=[], CABINETS=[], editingId=null, photoDataURL=null;
+let editingCabId=null, delPending=null, currentView='grid', filterCabinet='all', searchQ='';
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains(CAB_STORE)) d.createObjectStore(CAB_STORE,{keyPath:'id',autoIncrement:true});
+    };
+    req.onsuccess=e=>{db=e.target.result;res(db);};
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+function dbGetAll(store){return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const req=tx.objectStore(store).getAll();req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error);});}
+function dbPut(store,obj){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const req=tx.objectStore(store).put(obj);req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error);});}
+function dbDelete(store,id){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const req=tx.objectStore(store).delete(id);req.onsuccess=()=>res();req.onerror=()=>rej(req.error);});}
+
+function getRotation(id){return parseInt(localStorage.getItem('srot_'+id)||'0');}
+function setRotation(id,v){localStorage.setItem('srot_'+id,v);}
+function getPosition(id){return localStorage.getItem('spos_'+id)||'50% 30%';}
+function setPosition(id,v){localStorage.setItem('spos_'+id,v);}
+function getCabName(id){const c=CABINETS.find(x=>x.id===id);return c?c.name:'';}
+function gemCabinets(g){if(Array.isArray(g.cabinets))return g.cabinets;if(g.cabinet)return [g.cabinet];return [];}
+function getCabNames(g){return gemCabinets(g).map(getCabName).filter(Boolean);}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+async function init(){
+  await openDB();
+  [GEMS,CABINETS]=await Promise.all([dbGetAll(STORE),dbGetAll(CAB_STORE)]);
+  GEMS.forEach(g=>{if(g.cabinets===undefined)g.cabinets=g.cabinet?[g.cabinet]:[];});
+  renderCabBar();renderCards();
+}
+
+// ── NAV TABS ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-tab').forEach(btn=>{
+  btn.onclick=function(){
+    document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const tab=this.getAttribute('data-tab');
+    document.getElementById('tab-collection').style.display=tab==='collection'?'':'none';
+    document.getElementById('tab-cabinets').style.display=tab==='cabinets'?'':'none';
+    if(tab==='cabinets')renderCabinets();
+  };
+});
+
+// ── VIEW TOGGLE ─────────────────────────────────────────────────────────────
+document.getElementById('btn-grid-view').onclick=function(){
+  currentView='grid';
+  document.getElementById('view-grid').style.display='block';
+  document.getElementById('view-list').style.display='none';
+  this.classList.add('active-view');
+  document.getElementById('btn-list-view').classList.remove('active-view');
+};
+document.getElementById('btn-list-view').onclick=function(){
+  currentView='list';
+  document.getElementById('view-grid').style.display='none';
+  document.getElementById('view-list').style.display='block';
+  this.classList.add('active-view');
+  document.getElementById('btn-grid-view').classList.remove('active-view');
+  renderList();
+};
+
+// ── SEARCH ───────────────────────────────────────────────────────────────────
+document.getElementById('search').oninput=function(){searchQ=this.value.trim().toLowerCase();renderCards();};
+
+// ── CABINET BAR ─────────────────────────────────────────────────────────────
+function renderCabBar(){
+  const bar=document.getElementById('cabinet-bar');
+  let h=`<button class="cab-chip${filterCabinet==='all'?' active':''}" data-c="all">All</button>`;
+  h+=`<button class="cab-chip${filterCabinet==='none'?' active':''}" data-c="none">Unassigned</button>`;
+  CABINETS.forEach(c=>{h+=`<button class="cab-chip${filterCabinet===c.id?' active':''}" data-c="${c.id}">${esc(c.name)}</button>`;});
+  bar.innerHTML=h;
+  bar.onclick=ev=>{
+    const chip=ev.target.closest('.cab-chip');if(!chip)return;
+    const v=chip.getAttribute('data-c');
+    filterCabinet=v==='all'?'all':v==='none'?'none':parseInt(v);
+    renderCabBar();renderCards();
+  };
+}
+
+function filteredGems(){
+  const rar=document.getElementById('rarity-sel').value;
+  let pool=GEMS.slice();
+  if(filterCabinet==='none') pool=pool.filter(g=>gemCabinets(g).length===0);
+  else if(filterCabinet!=='all') pool=pool.filter(g=>gemCabinets(g).indexOf(filterCabinet)>-1);
+  if(rar!=='all') pool=pool.filter(g=>g.rarity===rar);
+  if(searchQ) pool=pool.filter(g=>(g.name+' '+g.type+' '+g.cat+' '+g.origin+' '+(g.prov||'')).toLowerCase().indexOf(searchQ)>-1);
+  return pool;
+}
+
+// ── RENDER CARDS ─────────────────────────────────────────────────────────────
+function renderCards(){
+  renderCabBar();
+  const grid=document.getElementById('card-grid');
+  const countEl=document.getElementById('card-count');
+  grid.innerHTML='';
+  const pool=filteredGems();
+  if(!pool.length){
+    grid.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🔮</div><div class="empty-state-title">No Spheres Yet</div><div class="empty-state-text">Tap the ＋ button to add your first sphere.</div></div>`;
+    countEl.textContent='';
+    if(currentView==='list')renderList();
+    return;
+  }
+  pool.forEach(g=>{grid.appendChild(buildCard(g));});
+  countEl.textContent=`${pool.length} sphere${pool.length!==1?'s':''} catalogued`;
+  if(currentView==='list')renderList();
+}
+
+// ── BUILD CARD — PHOTO GALLERY STYLE ─────────────────────────────────────────
+function buildCard(gem){
+  const card=document.createElement('div');
+  card.className='sph-card';
+
+  const dotColor=RARITY_COLOR[gem.rarity]||'#9b9b9b';
+
+  if(gem.photo){
+    const img=document.createElement('img');img.className='sph-photo';img.src=gem.photo;img.loading='lazy';
+    const deg=getRotation(gem.id);
+    if(deg)img.style.transform=`rotate(${deg}deg) scale(${(deg===90||deg===270)?1.42:1})`;
+
+    // touch pan
+    let ts=null,tsp=null,tm=false;
+    img.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];ts={x:t.clientX,y:t.clientY};const p=img.style.objectPosition.split(' ');tsp={x:parseFloat(p[0])||50,y:parseFloat(p[1])||30};tm=false;},{passive:true});
+    img.addEventListener('touchmove',e=>{if(!ts||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-ts.x,dy=t.clientY-ts.y;if(!tm&&Math.abs(dx)<6&&Math.abs(dy)<6)return;tm=true;e.stopPropagation();const nx=Math.max(0,Math.min(100,tsp.x-(dx/card.offsetWidth)*150));const ny=Math.max(0,Math.min(100,tsp.y-(dy/card.offsetHeight)*150));img.style.objectPosition=`${nx.toFixed(1)}% ${ny.toFixed(1)}%`;},{passive:false});
+    img.addEventListener('touchend',()=>{if(tm)setPosition(gem.id,img.style.objectPosition);ts=null;});
+
+    img.style.objectPosition=getPosition(gem.id);
+    card.appendChild(img);
+  } else {
+    const nop=document.createElement('div');nop.className='sph-no-photo';
+    const cv=document.createElement('canvas');cv.className='sph-orb-canvas';cv.width=160;cv.height=160;
+    nop.appendChild(cv);
+    card.appendChild(nop);
+    setTimeout(()=>drawOrb(cv,dotColor),30);
+  }
+
+  // overlay
+  const ov=document.createElement('div');ov.className='sph-overlay';
+  ov.innerHTML=`<div class="sph-name">${esc(gem.name)}</div><div class="sph-sub">${esc(gem.type||gem.cat||'')}${gem.origin?' · '+esc(gem.origin):''}</div>`;
+  card.appendChild(ov);
+
+  // rarity dot
+  const dot=document.createElement('div');dot.className='sph-rarity-dot';dot.style.cssText=`background:${dotColor};color:${dotColor};`;
+  card.appendChild(dot);
+
+  // cabinet badge (first one only)
+  const cabNames=getCabNames(gem);
+  if(cabNames.length){
+    const badge=document.createElement('div');badge.className='sph-cab-badge';badge.textContent=cabNames[0];
+    card.appendChild(badge);
+  }
+
+  card.addEventListener('click',()=>openDetail(gem));
+  return card;
+}
+
+// ── ORB ───────────────────────────────────────────────────────────────────────
+function drawOrb(canvas,accentColor){
+  const ctx=canvas.getContext('2d'),s=160,r=s*0.4,cx=s/2,cy=s/2;
+  ctx.clearRect(0,0,s,s);
+  const g=ctx.createRadialGradient(cx-r*.3,cy-r*.3,2,cx,cy,r);
+  g.addColorStop(0,accentColor+'cc');g.addColorStop(0.6,accentColor+'55');g.addColorStop(1,accentColor+'11');
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  const hi=ctx.createRadialGradient(cx-r*.3,cy-r*.35,0,cx-r*.1,cy-r*.15,r*.5);
+  hi.addColorStop(0,'rgba(255,255,255,0.6)');hi.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=hi;ctx.fill();
+}
+
+// ── LIST VIEW ────────────────────────────────────────────────────────────────
+function renderList(){
+  const pool=filteredGems();
+  let h='';
+  pool.forEach(g=>{
+    const hi=!!(g.photo);
+    const thumb=hi?`<img class="list-thumb lbt" src="${g.photo}" data-id="${g.id}" loading="lazy">`:`<div class="list-thumb-empty">🔮</div>`;
+    h+=`<tr>
+      <td>${thumb}</td>
+      <td><div class="list-name lbn" data-id="${g.id}">${esc(g.name||'')}</div><div style="font-size:.6rem;color:var(--accent);font-style:italic;">${esc(g.rarity||'')}</div></td>
+      <td>${esc(g.type||'')}</td>
+      <td>${g.diameter?g.diameter+'mm':''}</td>
+      <td>${esc(g.origin||'')}${g.location?'<br><span style="font-size:.68rem;font-style:italic;color:var(--text3);">'+esc(g.location)+'</span>':''}</td>
+      <td style="font-size:.75rem;font-style:italic;color:var(--text2);">${esc(g.prov||'')}</td>
+      <td style="font-size:.7rem;">${esc(getCabNames(g).join(', '))}</td>
+      <td><div class="list-acts"><button class="list-act lebt" data-id="${g.id}">Edit</button><button class="list-act del ldbt" data-id="${g.id}">Del</button></div></td>
+    </tr>`;
+  });
+  document.getElementById('list-body').innerHTML=h;
+  document.getElementById('list-body').onclick=ev=>{
+    const t=ev.target;
+    if(t.classList.contains('lebt')){ev.stopPropagation();openEditPanel(GEMS.find(g=>g.id===parseInt(t.getAttribute('data-id'))));return;}
+    if(t.classList.contains('ldbt')){ev.stopPropagation();openDel(parseInt(t.getAttribute('data-id')),'gem');return;}
+    if(t.classList.contains('lbt')||t.classList.contains('lbn')){openDetail(GEMS.find(g=>g.id===parseInt(t.getAttribute('data-id'))));return;}
+  };
+}
+
+// ── CABINETS ─────────────────────────────────────────────────────────────────
+function renderCabinets(){
+  const wrap=document.getElementById('cab-grid-wrap');
+  let h='<div class="cab-grid">';
+  CABINETS.forEach(c=>{
+    const cnt=GEMS.filter(g=>gemCabinets(g).indexOf(c.id)>-1).length;
+    h+=`<div class="cab-card"><div class="cab-icon">🪨</div><div class="cab-name">${esc(c.name)}</div>${c.location?'<div class="cab-loc">'+esc(c.location)+'</div>':''}<div class="cab-count">${cnt} sphere${cnt!==1?'s':''}</div><div class="cab-acts"><button class="cab-act cebt" data-cid="${c.id}">✎ Edit</button><button class="cab-act del cdbt" data-cid="${c.id}">✕ Remove</button></div></div>`;
+  });
+  h+=`<div class="add-cab-card" onclick="openAddCabModal()"><div style="font-size:1.4rem;">＋</div><div class="add-cab-label">New Stand</div></div>`;
+  h+='</div>';
+  wrap.innerHTML=h;
+  wrap.querySelector('.cab-grid').onclick=ev=>{
+    const cebt=ev.target.closest('.cebt');const cdbt=ev.target.closest('.cdbt');
+    if(cebt){openEditCabModal(parseInt(cebt.getAttribute('data-cid')));return;}
+    if(cdbt){openDel(parseInt(cdbt.getAttribute('data-cid')),'cab');return;}
+  };
+}
+
+document.getElementById('btn-add-cab').onclick=openAddCabModal;
+function openAddCabModal(){editingCabId=null;document.getElementById('cab-form-title').textContent='New Display Stand';document.getElementById('cf-name').value='';document.getElementById('cf-loc').value='';document.getElementById('cf-desc').value='';document.getElementById('cab-modal').classList.add('open');}
+function openEditCabModal(id){const c=CABINETS.find(x=>x.id===id);if(!c)return;editingCabId=id;document.getElementById('cab-form-title').textContent='Edit Stand';document.getElementById('cf-name').value=c.name||'';document.getElementById('cf-loc').value=c.location||'';document.getElementById('cf-desc').value=c.desc||'';document.getElementById('cab-modal').classList.add('open');}
+function closeCabModal(){document.getElementById('cab-modal').classList.remove('open');editingCabId=null;}
+function maybeCloseCabModal(e){if(e.target===document.getElementById('cab-modal'))closeCabModal();}
+
+async function saveCabinet(){
+  const nm=document.getElementById('cf-name').value.trim();
+  if(!nm){showToast('Please enter a stand name');return;}
+  const lo=document.getElementById('cf-loc').value.trim(),ds=document.getElementById('cf-desc').value.trim();
+  if(editingCabId!==null){
+    const i=CABINETS.findIndex(x=>x.id===editingCabId);
+    if(i>=0){CABINETS[i].name=nm;CABINETS[i].location=lo;CABINETS[i].desc=ds;await dbPut(CAB_STORE,CABINETS[i]);}
+  } else {
+    const nc={name:nm,location:lo,desc:ds};
+    const newId=await dbPut(CAB_STORE,nc);nc.id=newId;CABINETS.push(nc);
+  }
+  closeCabModal();renderCabinets();renderCabBar();showToast('Stand saved');
+}
+
+// ── DETAIL MODAL ─────────────────────────────────────────────────────────────
+function openDetail(gem){
+  if(!gem)return;
+  const modal=document.getElementById('detail-modal');
+  const inner=document.getElementById('detail-inner');
+  modal.className='detail-modal open';
+  inner.innerHTML='';
+
+  // close btn
+  const closeBtn=document.createElement('button');closeBtn.className='modal-close';closeBtn.innerHTML='✕';closeBtn.style.cssText='position:absolute;top:10px;left:10px;z-index:10;';closeBtn.onclick=closeDetail;
+
+  if(gem.photo){
+    const photoWrap=document.createElement('div');photoWrap.style.position='relative';
+    const deg=getRotation(gem.id);const sc=(deg===90||deg===270)?'scale(1.5)':'scale(1)';const pos=getPosition(gem.id);
+    const pd=document.createElement('div');pd.className='detail-photo';pd.style.cssText=`background-image:url(${gem.photo});background-size:cover;background-position:${pos};transform:rotate(${deg}deg) ${sc};`;
+    let ms=null,msp=null,mm=false;
+    pd.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];ms={x:t.clientX,y:t.clientY};const p=pd.style.backgroundPosition.split(' ');msp={x:parseFloat(p[0])||50,y:parseFloat(p[1])||30};mm=false;},{passive:true});
+    pd.addEventListener('touchmove',e=>{if(!ms||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-ms.x,dy=t.clientY-ms.y;if(!mm&&Math.abs(dx)<6&&Math.abs(dy)<6)return;mm=true;e.stopPropagation();const nx=Math.max(0,Math.min(100,msp.x-(dx/pd.offsetWidth)*100));const ny=Math.max(0,Math.min(100,msp.y-(dy/pd.offsetHeight)*100));pd.style.backgroundPosition=`${nx.toFixed(1)}% ${ny.toFixed(1)}%`;},{passive:false});
+    pd.addEventListener('touchend',()=>{if(mm)setPosition(gem.id,pd.style.backgroundPosition);ms=null;});
+    const rotBtn=document.createElement('button');rotBtn.className='detail-rotate-btn';rotBtn.style.cssText='position:absolute;top:10px;right:10px;z-index:10;';rotBtn.textContent='↻';
+    rotBtn.onclick=()=>{const nd=(getRotation(gem.id)+90)%360;setRotation(gem.id,nd);const nsc=(nd===90||nd===270)?'scale(1.5)':'scale(1)';pd.style.transition='transform .18s';pd.style.transform=`rotate(${nd}deg) ${nsc}`;};
+    photoWrap.appendChild(pd);photoWrap.appendChild(rotBtn);photoWrap.appendChild(closeBtn);inner.appendChild(photoWrap);
+  } else {
+    const nop=document.createElement('div');nop.style.cssText='height:140px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;';
+    nop.textContent='🔮';nop.appendChild(closeBtn);inner.appendChild(nop);
+  }
+
+  const body=document.createElement('div');body.className='detail-body';
+  body.innerHTML=`<div class="detail-name">${esc(gem.name)}</div><div class="detail-type">${esc([gem.type,gem.cat,gem.chakra].filter(Boolean).join(' · '))}</div>`;
+
+  const fields=[];
+  if(gem.diameter||gem.weight) fields.push({l:'Size / Weight',v:(gem.diameter?gem.diameter+'mm':'')+(gem.diameter&&gem.weight?' · ':'')+(gem.weight?gem.weight+'g':'')});
+  if(gem.mohs) fields.push({l:'Mohs Hardness',v:String(gem.mohs)});
+  if(gem.origin||gem.location) fields.push({l:'Origin',v:(gem.origin||'')+(gem.location?' — '+gem.location:'')});
+  if(gem.prov) fields.push({l:'Provenance',v:gem.prov});
+  if(gem.rarity) fields.push({l:'Rarity',v:gem.rarity});
+  const cabNames=getCabNames(gem);
+  if(cabNames.length) fields.push({l:'Display Stands',v:cabNames.join(', ')});
+  if(fields.length){
+    const mf=document.createElement('div');mf.className='detail-fields';
+    mf.innerHTML=fields.map(f=>`<div class="detail-field"><div class="detail-field-label">${f.l}</div><div class="detail-field-val">${esc(f.v)}</div></div>`).join('');
+    body.appendChild(mf);
+  }
+  const facts=Array.isArray(gem.facts)?gem.facts:[];
+  if(gem.flavor){const fs=document.createElement('div');fs.innerHTML=`<div class="detail-section-title">Description</div><div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;">${esc(gem.flavor)}</div>`;body.appendChild(fs);}
+  if(facts.length){const fe=document.createElement('div');fe.innerHTML=`<div class="detail-section-title">Gemological Notes</div><ul class="detail-facts">${facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`;body.appendChild(fe);}
+
+  const acts=document.createElement('div');acts.className='detail-actions';
+  const editBtn=document.createElement('button');editBtn.className='detail-btn primary';editBtn.textContent='Edit';editBtn.onclick=()=>{closeDetail();openEditPanel(gem);};
+  const delBtn=document.createElement('button');delBtn.className='detail-btn danger';delBtn.textContent='Delete';delBtn.onclick=()=>{closeDetail();openDel(gem.id,'gem');};
+  acts.appendChild(editBtn);acts.appendChild(delBtn);body.appendChild(acts);
+  inner.appendChild(body);
+}
+function closeDetail(){document.getElementById('detail-modal').className='detail-modal';}
+function maybeCloseDetail(e){if(e.target===document.getElementById('detail-modal'))closeDetail();}
+
+// ── ADD / EDIT PANEL ──────────────────────────────────────────────────────────
+let selectedCabIds=[];
+function fillCabCheckboxes(selectedIds){
+  selectedCabIds=(selectedIds||[]).slice();
+  const wrap=document.getElementById('f-cabinets-wrap');
+  if(!CABINETS.length){wrap.innerHTML='<div class="cab-check-empty">No display stands yet.</div>';return;}
+  renderCabCheckRows();
+}
+function renderCabCheckRows(){
+  const wrap=document.getElementById('f-cabinets-wrap');
+  let h='';
+  CABINETS.forEach(c=>{
+    const on=selectedCabIds.indexOf(c.id)>-1;
+    h+=`<button type="button" class="cab-check-row${on?' on':''}" data-cid="${c.id}"><span class="cab-check-box">${on?'✓':''}</span>${esc(c.name)}</button>`;
+  });
+  wrap.innerHTML=h;
+  wrap.onclick=function(ev){
+    const btn=ev.target.closest('.cab-check-row');if(!btn)return;
+    const cid=parseInt(btn.getAttribute('data-cid'));
+    const idx=selectedCabIds.indexOf(cid);
+    if(idx>-1)selectedCabIds.splice(idx,1);else selectedCabIds.push(cid);
+    renderCabCheckRows();
+  };
+}
+function getSelectedCabinets(){return selectedCabIds.slice();}
+
+function openAddPanel(){
+  editingId=null;photoDataURL=null;
+  document.getElementById('form-title').textContent='Add New Sphere';
+  ['f-name','f-cat','f-type','f-mohs','f-diameter','f-weight','f-origin','f-location','f-prov','f-chakra','f-flavor','f-facts'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('f-rarity').value='Common';
+  document.getElementById('f-photo').value='';
+  const prev=document.getElementById('photo-preview-img');prev.src='';prev.style.display='none';
+  fillCabCheckboxes([]);
+  document.getElementById('add-panel').classList.add('open');
+}
+function openEditPanel(gem){
+  if(!gem)return;
+  editingId=gem.id;photoDataURL=gem.photo||null;
+  document.getElementById('form-title').textContent='Edit Sphere';
+  document.getElementById('f-name').value=gem.name||'';
+  document.getElementById('f-cat').value=gem.cat||'';
+  document.getElementById('f-type').value=gem.type||'';
+  document.getElementById('f-rarity').value=gem.rarity||'Common';
+  document.getElementById('f-mohs').value=gem.mohs||'';
+  document.getElementById('f-diameter').value=gem.diameter||'';
+  document.getElementById('f-weight').value=gem.weight||'';
+  document.getElementById('f-origin').value=gem.origin||'';
+  document.getElementById('f-location').value=gem.location||'';
+  document.getElementById('f-prov').value=gem.prov||'';
+  document.getElementById('f-chakra').value=gem.chakra||'';
+  document.getElementById('f-flavor').value=gem.flavor||'';
+  document.getElementById('f-facts').value=(gem.facts||[]).join('\n');
+  document.getElementById('f-photo').value='';
+  const prev=document.getElementById('photo-preview-img');
+  if(gem.photo){prev.src=gem.photo;prev.style.display='block';}else{prev.style.display='none';}
+  fillCabCheckboxes(gemCabinets(gem));
+  document.getElementById('add-panel').classList.add('open');
+}
+function closeAddPanel(){document.getElementById('add-panel').classList.remove('open');editingId=null;photoDataURL=null;}
+function previewPhoto(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{photoDataURL=e.target.result;const prev=document.getElementById('photo-preview-img');prev.src=photoDataURL;prev.style.display='block';};reader.readAsDataURL(file);}
+
+async function saveGem(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){showToast('Please enter a sphere name');return;}
+  const factsRaw=document.getElementById('f-facts').value.trim();
+  const facts=factsRaw?factsRaw.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,5):[];
+  const gem={
+    name,cat:document.getElementById('f-cat').value.trim()||'Uncategorized',
+    type:document.getElementById('f-type').value.trim(),
+    rarity:document.getElementById('f-rarity').value,
+    mohs:parseFloat(document.getElementById('f-mohs').value)||'',
+    diameter:parseInt(document.getElementById('f-diameter').value)||null,
+    weight:parseInt(document.getElementById('f-weight').value)||null,
+    origin:document.getElementById('f-origin').value.trim(),
+    location:document.getElementById('f-location').value.trim(),
+    prov:document.getElementById('f-prov').value.trim(),
+    chakra:document.getElementById('f-chakra').value.trim(),
+    flavor:document.getElementById('f-flavor').value.trim(),
+    facts,photo:photoDataURL||null,cabinets:getSelectedCabinets(),
+  };
+  if(editingId!==null)gem.id=editingId;
+  try{
+    const newId=await dbPut(STORE,gem);
+    if(!gem.id)gem.id=newId;
+    const idx=GEMS.findIndex(g=>g.id===gem.id);
+    if(idx>=0)GEMS[idx]=gem;else GEMS.push(gem);
+    renderCards();closeAddPanel();
+    showToast(editingId!==null?'Sphere updated':'Sphere added');
+  }catch(err){showToast('Error — '+err.message);}
+}
+
+// ── BULK ADD ────────────────────────────────────────────────────────────────
+let bulkQueue=[],bulkIndex=0,bulkLastMeta=null,bulkPendingPhoto=null,selectedBulkCabIds=[];
+
+document.getElementById('bulk-photo-input').onchange=function(){
+  const files=Array.prototype.slice.call(this.files);this.value='';
+  if(!files.length)return;
+  bulkQueue=files;bulkIndex=0;bulkLastMeta=null;openBulkStep();
+};
+
+function openBulkStep(){
+  if(bulkIndex>=bulkQueue.length){closeBulkModal();renderCards();showToast('Bulk import complete');return;}
+  document.getElementById('bulk-progress').textContent=`Sphere ${bulkIndex+1} of ${bulkQueue.length}`;
+  document.getElementById('bf-name').value='';
+  document.getElementById('bf-cat').value=bulkLastMeta?bulkLastMeta.cat:'';
+  document.getElementById('bf-origin').value=bulkLastMeta?bulkLastMeta.origin:'';
+  document.getElementById('bf-location').value=bulkLastMeta?bulkLastMeta.location:'';
+  document.getElementById('bf-prov').value=bulkLastMeta?bulkLastMeta.prov:'';
+  selectedBulkCabIds=bulkLastMeta?bulkLastMeta.cabinets.slice():[];
+  renderBulkCabRows();
+  document.getElementById('bulk-ferr').style.display='none';
+  bulkPendingPhoto=null;
+  const prev=document.getElementById('bulk-photo-prev');prev.style.display='none';
+  const reader=new FileReader();
+  reader.onload=e=>{bulkPendingPhoto=e.target.result;prev.src=bulkPendingPhoto;prev.style.display='block';};
+  reader.readAsDataURL(bulkQueue[bulkIndex]);
+  document.getElementById('bulk-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('bf-name').focus(),80);
+}
+
+function renderBulkCabRows(){
+  const wrap=document.getElementById('bf-cabinets-wrap');
+  if(!CABINETS.length){wrap.innerHTML='<div style="font-size:13px;font-style:italic;color:var(--text3);padding:4px 0;">No display stands yet.</div>';return;}
+  let h='';
+  CABINETS.forEach(c=>{
+    const on=selectedBulkCabIds.indexOf(c.id)>-1;
+    h+=`<button type="button" class="cab-check-row${on?' on':''}" data-cid="${c.id}"><span class="cab-check-box">${on?'✓':''}</span>${esc(c.name)}</button>`;
+  });
+  wrap.innerHTML=h;
+  wrap.onclick=ev=>{
+    const btn=ev.target.closest('.cab-check-row');if(!btn)return;
+    const cid=parseInt(btn.getAttribute('data-cid'));
+    const idx=selectedBulkCabIds.indexOf(cid);
+    if(idx>-1)selectedBulkCabIds.splice(idx,1);else selectedBulkCabIds.push(cid);
+    renderBulkCabRows();
+  };
+}
+
+document.getElementById('bulk-skip').onclick=()=>{bulkIndex++;openBulkStep();};
+document.getElementById('bulk-cancel').onclick=()=>{if(confirm('Stop bulk import? Spheres saved so far will be kept.')){closeBulkModal();renderCards();}};
+document.getElementById('bulk-save').onclick=async()=>{
+  const nm=document.getElementById('bf-name').value.trim();
+  if(!nm){const el=document.getElementById('bulk-ferr');el.textContent='Please enter a name.';el.style.display='block';return;}
+  const cat=document.getElementById('bf-cat').value.trim()||'Uncategorized';
+  const origin=document.getElementById('bf-origin').value.trim();
+  const location=document.getElementById('bf-location').value.trim();
+  const prov=document.getElementById('bf-prov').value.trim();
+  const cabIds=selectedBulkCabIds.slice();
+  const gem={name:nm,cat,type:'',rarity:'Common',mohs:'',diameter:null,weight:null,origin,location,prov,chakra:'',flavor:'',facts:[],photo:bulkPendingPhoto||null,cabinets:cabIds};
+  try{const newId=await dbPut(STORE,gem);gem.id=newId;GEMS.push(gem);}
+  catch(err){const el=document.getElementById('bulk-ferr');el.textContent='Error: '+err.message;el.style.display='block';return;}
+  bulkLastMeta={cat,origin,location,prov,cabinets:cabIds};
+  bulkIndex++;openBulkStep();
+};
+function closeBulkModal(){document.getElementById('bulk-modal').classList.remove('open');bulkQueue=[];bulkIndex=0;bulkPendingPhoto=null;}
+
+// ── DELETE ────────────────────────────────────────────────────────────────────
+function openDel(id,type){
+  delPending={id,type};
+  if(type==='gem'){const g=GEMS.find(x=>x.id===id);document.getElementById('del-name').textContent=g?g.name:id;document.getElementById('del-note').textContent='This cannot be undone.';}
+  else{const c=CABINETS.find(x=>x.id===id);document.getElementById('del-name').textContent=c?c.name:id;document.getElementById('del-note').textContent='Spheres in this stand will become unassigned.';}
+  document.getElementById('del-modal').classList.add('open');
+}
+function closeDel(){document.getElementById('del-modal').classList.remove('open');delPending=null;}
+document.getElementById('del-yes-btn').onclick=async()=>{
+  if(!delPending)return;
+  const {id,type}=delPending;
+  if(type==='gem'){
+    await dbDelete(STORE,id);GEMS=GEMS.filter(g=>g.id!==id);renderCards();showToast('Sphere removed');
+  } else {
+    await dbDelete(CAB_STORE,id);CABINETS=CABINETS.filter(c=>c.id!==id);
+    for(const g of GEMS){const cabs=gemCabinets(g);const idx=cabs.indexOf(id);if(idx>-1){cabs.splice(idx,1);g.cabinets=cabs;delete g.cabinet;await dbPut(STORE,g);}}
+    renderCabinets();renderCabBar();renderCards();showToast('Stand removed');
+  }
+  closeDel();
+};
+document.getElementById('del-modal').onclick=ev=>{if(ev.target===document.getElementById('del-modal'))closeDel();};
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ── ESCAPE ────────────────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── PURCHASE MATCH ───────────────────────────────────────────────────────────
+const PURCH_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vSOTWPZlNWNm_SLqhDH9d4-NEF4zBatjrNXiMmPkmybnh8rUnK5R2kjcSIxd_CLwDMj-Bvp_Z3HqW4y/pub?gid=306141163&single=true&output=csv';
+let SPHERE_PURCHASES=[], currentSphereMatches=[];
+
+function parseCSV(text){
+  const rows=[],state={row:[],field:'',inQ:false};
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(state.inQ){if(c==='"'){if(text[i+1]==='"'){state.field+='"';i++;}else state.inQ=false;}else state.field+=c;}
+    else{if(c==='"')state.inQ=true;else if(c===','){state.row.push(state.field);state.field='';}else if(c==='\r'){}else if(c==='\n'){state.row.push(state.field);rows.push(state.row);state.row=[];state.field='';}else state.field+=c;}
+  }
+  if(state.field.length||state.row.length){state.row.push(state.field);rows.push(state.row);}
+  return rows;
+}
+
+function rowsToSpheres(rows){
+  if(!rows.length)return[];
+  const hdr=rows[0].map(h=>String(h||'').trim().toLowerCase());
+  const iV=hdr.indexOf('vendor'),iI=hdr.indexOf('invoice #'),iD=hdr.indexOf('purchase date'),
+        iIt=hdr.indexOf('item'),iQ=hdr.indexOf('qty'),iPr=hdr.indexOf('line total'),
+        iTy=hdr.indexOf('type'),iG=hdr.indexOf('gemstone'),iO=hdr.indexOf('region/origin');
+  const out=[];
+  for(let r=1;r<rows.length;r++){
+    const c=rows[r];if(!c||!c.length)continue;
+    const item=(c[iIt]||'').trim(),gem=(c[iG]||'').trim();
+    if(!item&&!gem)continue;
+    if(item.toLowerCase().indexOf('sphere')===-1&&gem.toLowerCase().indexOf('sphere')===-1)continue;
+    out.push({vendor:(c[iV]||'').trim(),invoice:(c[iI]||'').trim(),date:(c[iD]||'').trim(),
+              item,qty:(c[iQ]||'').trim(),price:(c[iPr]||'').trim(),
+              type:(c[iTy]||'').trim(),gem,origin:(c[iO]||'').trim()});
+  }
+  return out;
+}
+
+function cleanSphereItemName(s){
+  return String(s||'').replace(/\s*\d+pc[s]?\s*\([^)]*\)/gi,'').replace(/\s*\([^)]*\)/,'').replace(/,\s*$/,'').replace(/\s*-\s*$/,'').trim();
+}
+
+function setPurchStatus(msg){
+  ['f-purch-status','bf-purch-status'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=msg;});
+}
+
+function loadSpherePurchases(){
+  setPurchStatus('Checking purchase history…');
+  fetch(PURCH_CSV,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error();return r.text();})
+  .then(text=>{
+    const list=rowsToSpheres(parseCSV(text));
+    if(!list.length)throw new Error();
+    SPHERE_PURCHASES=list;
+    setPurchStatus(list.length+' sphere purchases synced ✓');
+  }).catch(()=>setPurchStatus(''));
+}
+
+function fillFromSpherePurchase(p,mode){
+  const pre=mode==='bulk'?'bf-':'f-';
+  const nm=cleanSphereItemName(p.item)||p.gem||'';
+  const nameEl=document.getElementById(pre+'name');if(nameEl)nameEl.value=nm;
+  const catEl=document.getElementById(pre+'cat');if(catEl)catEl.value=p.gem||'';
+  const typeEl=document.getElementById(pre+'type');if(typeEl)typeEl.value=p.gem||'';
+  const origEl=document.getElementById(pre+'origin');if(origEl)origEl.value=(p.origin&&p.origin.toLowerCase()!=='unknown')?p.origin:'';
+  const provEl=document.getElementById(pre+'prov');
+  if(provEl){
+    const parts=[];if(p.vendor)parts.push(p.vendor);
+    if(p.invoice&&!p.invoice.toLowerCase().startsWith('manual'))parts.push('Inv #'+p.invoice);
+    if(p.date)parts.push(p.date);
+    if(parts.length)provEl.value=parts.join(' · ');
+  }
+}
+
+function wireSphereSearch(searchId,resultsId,mode){
+  const inp=document.getElementById(searchId),box=document.getElementById(resultsId);
+  if(!inp||!box)return;
+  inp.oninput=function(){
+    const q=this.value.trim().toLowerCase();
+    if(q.length<2){box.innerHTML='';currentSphereMatches=[];return;}
+    currentSphereMatches=SPHERE_PURCHASES.filter(p=>(p.gem+' '+p.item+' '+p.origin+' '+p.vendor).toLowerCase().indexOf(q)>-1).slice(0,12);
+    if(!currentSphereMatches.length){box.innerHTML='<div class="purch-empty">No sphere purchases found.</div>';return;}
+    box.innerHTML=currentSphereMatches.map((p,i)=>{
+      const nm=p.gem||cleanSphereItemName(p.item);
+      const org=(p.origin&&p.origin.toLowerCase()!=='unknown')?p.origin:'';
+      return `<button type="button" class="purch-row" data-i="${i}">${esc(nm)}${org?' — '+esc(org):''}${p.price?' · '+esc(p.price):''}${p.vendor?' · '+esc(p.vendor):''}</button>`;
+    }).join('');
+  };
+  box.onclick=function(ev){
+    const btn=ev.target.closest('.purch-row');if(!btn)return;
+    const p=currentSphereMatches[parseInt(btn.getAttribute('data-i'))];
+    if(p){fillFromSpherePurchase(p,mode);box.innerHTML='';inp.value='';}
+  };
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+wireSphereSearch('f-purch-search','f-purch-results','single');
+wireSphereSearch('bf-purch-search','bf-purch-results','bulk');
+loadSpherePurchases();
+init();
+</script>
+</body>
+</html>
